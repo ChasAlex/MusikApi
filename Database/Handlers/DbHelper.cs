@@ -1,11 +1,6 @@
 ﻿using Database.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Database.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Database.Handlers
 {
@@ -17,6 +12,55 @@ namespace Database.Handlers
             var results = context.Users.ToListAsync();
             return await results;
         }
+
+
+
+
+
+
+        //public static async Task<IReadOnlyList<Genre>> ListAllGenresAsync(MusicContext context, int id)
+        //{
+        //    var results = context.Users.ToListAsync();
+        //    return await results;
+        //}
+
+
+
+
+        //public static async Task<IReadOnlyList<Artist>> ListAllArtistsAsync(MusicContext context, int id)
+        //{
+        //    var results = context.Users.ToListAsync();
+        //    return await results;
+        //}
+
+
+
+
+        //public static async Task<IReadOnlyList<Song>> ListAllSongsAsync(MusicContext context, int id)
+        //{
+        //    var results = context.Users.ToListAsync();
+        //    return await results;
+        //}
+
+
+
+
+        //// Koppla en person till en ny genre, artist och låt // Todo fix name
+
+        //public static async Task<IReadOnlyList<User>> ConntectPerson(MusicContext context)
+        //{
+        //    var results = context.Users.ToListAsync();
+        //    return await results;
+        //}   
+
+
+
+
+
+
+
+
+
 
     }
 }
