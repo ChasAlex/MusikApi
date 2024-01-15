@@ -26,8 +26,8 @@ namespace Database.Migrations
                     b.Property<int>("ArtistsId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UsersId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
 
                     b.HasKey("ArtistsId", "UsersId");
 
@@ -85,6 +85,8 @@ namespace Database.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Credentials");
                 });
@@ -144,13 +146,13 @@ namespace Database.Migrations
 
             modelBuilder.Entity("Database.Models.User", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("ArtistId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("CredentialId")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ArtistId")
                         .HasColumnType("int");
 
                     b.Property<string>("Fullname")
@@ -165,9 +167,6 @@ namespace Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CredentialId")
-                        .IsUnique();
-
                     b.ToTable("Users");
                 });
 
@@ -176,8 +175,8 @@ namespace Database.Migrations
                     b.Property<int>("GenresId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UsersId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
 
                     b.HasKey("GenresId", "UsersId");
 
@@ -191,8 +190,8 @@ namespace Database.Migrations
                     b.Property<int>("SongsId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UsersId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
 
                     b.HasKey("SongsId", "UsersId");
 
@@ -216,6 +215,17 @@ namespace Database.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Database.Models.Credential", b =>
+                {
+                    b.HasOne("Database.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Database.Models.Song", b =>
                 {
                     b.HasOne("Database.Models.Artist", "Artist")
@@ -233,17 +243,6 @@ namespace Database.Migrations
                     b.Navigation("Artist");
 
                     b.Navigation("Genre");
-                });
-
-            modelBuilder.Entity("Database.Models.User", b =>
-                {
-                    b.HasOne("Database.Models.Credential", "Credential")
-                        .WithOne("User")
-                        .HasForeignKey("Database.Models.User", "CredentialId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Credential");
                 });
 
             modelBuilder.Entity("GenreUser", b =>
@@ -279,12 +278,6 @@ namespace Database.Migrations
             modelBuilder.Entity("Database.Models.Artist", b =>
                 {
                     b.Navigation("Songs");
-                });
-
-            modelBuilder.Entity("Database.Models.Credential", b =>
-                {
-                    b.Navigation("User")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Database.Models.Genre", b =>

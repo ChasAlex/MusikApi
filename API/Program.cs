@@ -13,7 +13,7 @@ namespace API
 
             //string connectionString = builder.Configuration.GetConnectionString("dbConnection");
 
-            string hardcodedConnection = "Data Source=(localdb)\\.;Initial Catalog=MusicApiProjectDb;Integrated Security=True;Pooling=False;Trust Server Certificate=False";
+            string hardcodedConnection = "Data Source=(localdb)\\.;Initial Catalog=MusikDb;Integrated Security=True;Pooling=False;Trust Server Certificate=False";
 
             builder.Services.AddDbContext<MusicContext>(opt => opt.UseSqlServer(hardcodedConnection));
 

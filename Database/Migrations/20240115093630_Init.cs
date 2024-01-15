@@ -26,21 +26,6 @@ namespace Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Credentials",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Credentials", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Genres",
                 columns: table => new
                 {
@@ -59,9 +44,9 @@ namespace Database.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Fullname = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CredentialId = table.Column<int>(type: "int", nullable: false),
                     GenreId = table.Column<int>(type: "int", nullable: false),
                     SongId = table.Column<int>(type: "int", nullable: false),
                     ArtistId = table.Column<int>(type: "int", nullable: false)
@@ -69,12 +54,6 @@ namespace Database.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Users_Credentials_CredentialId",
-                        column: x => x.CredentialId,
-                        principalTable: "Credentials",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -110,7 +89,7 @@ namespace Database.Migrations
                 columns: table => new
                 {
                     ArtistsId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UsersId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -130,11 +109,32 @@ namespace Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Credentials",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Credentials", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Credentials_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GenreUser",
                 columns: table => new
                 {
                     GenresId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UsersId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -158,7 +158,7 @@ namespace Database.Migrations
                 columns: table => new
                 {
                     SongsId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UsersId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -183,6 +183,11 @@ namespace Database.Migrations
                 column: "UsersId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Credentials_UserId",
+                table: "Credentials",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GenreUser_UsersId",
                 table: "GenreUser",
                 column: "UsersId");
@@ -201,18 +206,15 @@ namespace Database.Migrations
                 name: "IX_SongUser_UsersId",
                 table: "SongUser",
                 column: "UsersId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_CredentialId",
-                table: "Users",
-                column: "CredentialId",
-                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "ArtistUser");
+
+            migrationBuilder.DropTable(
+                name: "Credentials");
 
             migrationBuilder.DropTable(
                 name: "GenreUser");
@@ -231,9 +233,6 @@ namespace Database.Migrations
 
             migrationBuilder.DropTable(
                 name: "Genres");
-
-            migrationBuilder.DropTable(
-                name: "Credentials");
         }
     }
 }
