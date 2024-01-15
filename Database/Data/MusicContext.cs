@@ -17,7 +17,7 @@ namespace Database.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=(localdb)\\.;Initial Catalog=MusicApiProjectDb;Integrated Security=True;Pooling=False;Trust Server Certificate=False");
+            optionsBuilder.UseSqlServer("Data Source=(localdb)\\.;Initial Catalog=MusikDb;Integrated Security=True;Pooling=False;Trust Server Certificate=False");
         }
     }
 }
@@ -25,5 +25,5 @@ namespace Database.Data
 
 // Alex connectionstring = "Data Source=(localdb)\\.;Initial Catalog=MusikAPI;Integrated Security=True;Pooling=False"
 
-// Andreas connectionstring = "Data Source=(localdb)\\.;Initial Catalog=MusicApiProjectDb;Integrated Security=True;Pooling=False;Trust Server Certificate=False"
+// Andreas connectionstring = "Data Source=(localdb)\\.;Initial Catalog=MusikDb;Integrated Security=True;Pooling=False;Trust Server Certificate=False"
 
