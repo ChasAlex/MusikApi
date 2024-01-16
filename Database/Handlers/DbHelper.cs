@@ -13,6 +13,35 @@ namespace Database.Handlers
             return await results;
         }
 
+        //Gets all genres for user from database
+        public static async Task<List<Genre>> GetGenresForUserAsync(MusicContext context, int userId)
+        {
+            List<Genre> genres = new List<Genre>();
+
+            User user = await context.Users.Include(u => u.Genres).FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user != null)
+            {
+                genres = user.Genres?.ToList() ?? new List<Genre>();
+            }
+
+            return genres;
+        }
+
+        //Gets all artists for users from database
+        public static async Task<List<Artist>> GetArtistsForUserAsync(MusicContext context, int userId)
+        {
+            List<Artist> artists = new List<Artist>();
+
+            User user = await context.Users.Include(u => u.Artists).FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user != null && user.Artists != null)
+            {
+                artists = user.Artists?.ToList() ?? new List<Artist>();
+            }
+
+            return artists;
+        }
 
 
 

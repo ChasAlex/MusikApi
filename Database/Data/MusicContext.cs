@@ -17,7 +17,7 @@ namespace Database.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=(localdb)\\.;Initial Catalog=MusikDb;Integrated Security=True;Pooling=False;Trust Server Certificate=False");
+            optionsBuilder.UseSqlServer("Data Source=(localdb)\\.;Initial Catalog=MusicProj;Integrated Security=True;Pooling=False;Encrypt=False;Trust Server Certificate=True");
         }
     }
 }
@@ -27,3 +27,4 @@ namespace Database.Data
 
 // Andreas connectionstring = "Data Source=(localdb)\\.;Initial Catalog=MusikDb;Integrated Security=True;Pooling=False;Trust Server Certificate=False"
 
+// Marias connectionstring = "Data Source=(localdb)\.;Initial Catalog=MusicProj;Integrated Security=True;Pooling=False;Encrypt=False;Trust Server Certificate=True"

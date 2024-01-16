@@ -2,7 +2,6 @@ using Database.Data;
 using Database.Handlers;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace API
 {
     public class Program
@@ -11,19 +10,43 @@ namespace API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            //string connectionString = builder.Configuration.GetConnectionString("dbConnection");
-
-            string hardcodedConnection = "Data Source=(localdb)\\.;Initial Catalog=MusikDb;Integrated Security=True;Pooling=False;Trust Server Certificate=False";
-
-            builder.Services.AddDbContext<MusicContext>(opt => opt.UseSqlServer(hardcodedConnection));
+            string ConnectionString = builder.Configuration.GetConnectionString("MusicContext");
+            builder.Services.AddDbContext<MusicContext>(options => options.UseSqlServer(ConnectionString));
 
             var app = builder.Build();
 
+            app.MapGet("/", () => "");
 
-            //Hämta alla personer i systemet
-            app.Map("/users", DbHelper.ListAllUserAsync);
+            //Get all users
+            app.MapGet("/users", DbHelper.ListAllUserAsync);
 
+            //Get all genres for chosen user
+            app.MapGet("/genres/{UserId}", async (MusicContext context, int UserId) =>
+            {
+                var genres = await DbHelper.GetGenresForUserAsync(context, UserId);
 
+                if (genres == null)
+                {
+                    return Results.NotFound();
+                }
+
+                var genreData = genres.Select(genre => new { genre.Title });
+                return Results.Json(genreData);
+            });
+
+            //Get all artists for chosen user
+            app.MapGet("/artists/{UserId}", async (MusicContext context, int UserId) =>
+            {
+                var artists = await DbHelper.GetArtistsForUserAsync(context, UserId);
+
+                if (artists == null)
+                {
+                    return Results.NotFound();
+                }
+
+                var artistData = artists.Select(artist => new { artist.Name, artist.Description, artist.Country });
+                return Results.Json(artistData);
+            });
 
             app.Run();
         }
