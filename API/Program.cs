@@ -1,5 +1,6 @@
+using API.EndPoints;
 using Database.Data;
-using Database.Handlers;
+using Database.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -11,17 +12,16 @@ namespace API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            //string connectionString = builder.Configuration.GetConnectionString("dbConnection");
+            string connectionString = builder.Configuration.GetConnectionString("MusicDbCon");
 
-            string hardcodedConnection = "Data Source=(localdb)\\.;Initial Catalog=MusikDb;Integrated Security=True;Pooling=False;Trust Server Certificate=False";
-
-            builder.Services.AddDbContext<MusicContext>(opt => opt.UseSqlServer(hardcodedConnection));
+            builder.Services.AddDbContext<MusicContext>(opt => opt.UseSqlServer(connectionString));
+            builder.Services.AddScoped<IPersonRepo, PersonRepo>();
 
             var app = builder.Build();
 
 
-            //Hämta alla personer i systemet
-            app.Map("/users", DbHelper.ListAllUserAsync);
+
+            app.MusicApiExtensions();
 
 
 
