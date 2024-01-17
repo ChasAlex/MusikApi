@@ -5,24 +5,18 @@ namespace Database.Models
 {
     public class Song
     {
-        [Key]
         public int Id { get; set; }
         public string Name { get; set; }
 
-
-        [ForeignKey(nameof(GenreId))]
-        public int GenreId { get; set; }
-        public virtual Genre Genre { get; set; }
-
-
-        [ForeignKey(nameof(ArtistId))]
+        // Foreign Key for one-to-many relationship with Artist
         public int ArtistId { get; set; }
         public virtual Artist Artist { get; set; }
 
+        // Foreign Key for one-to-many relationship with Artist
+        public int GenreId { get; set; }
+        public virtual Genre Genre { get; set; }
 
-        [ForeignKey(nameof(UserId))]
-        public int UserId { get; set; }
-        public virtual ICollection<User>? Users { get; set; }
-
+        // Navigation Property for many-to-many relationship with Users
+        public ICollection<UserSong> UserSongs { get; set; }
     }
 }

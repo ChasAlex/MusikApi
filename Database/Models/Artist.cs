@@ -5,20 +5,15 @@ namespace Database.Models
 {
     public class Artist
     {
-        [Key]
         public int Id { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
         public string? Country { get; set; }
 
+        // Navigation Property for one-to-many relationship with Songs
+        public ICollection<Song> Songs { get; set; }
 
-        [ForeignKey(nameof(SongId))]
-        public int SongId { get; set; }
-        public virtual ICollection<Song> Songs { get; set; }
-
-
-        [ForeignKey(nameof(UserId))]
-        public int UserId { get; set; }
-        public virtual ICollection<User> Users { get; set; }
+        // Navigation Property for many-to-many relationship with Users
+        public ICollection<UserArtist> UserArtists { get; set; }
     }
 }

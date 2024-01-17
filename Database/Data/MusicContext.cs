@@ -14,16 +14,27 @@ namespace Database.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Song> Songs { get; set; }
         public DbSet<Credential> Credentials { get; set; }
+        public DbSet<UserArtist> UserArtists { get; set; }
+        public DbSet<UserGenre> UserGenres { get; set; }
+        public DbSet<UserSong> UserSongs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=(localdb)\\.;Initial Catalog=MusikDb;Integrated Security=True;Pooling=False;Trust Server Certificate=False");
+            optionsBuilder.UseSqlServer("Data Source=(localdb)\\.;Initial Catalog=DbMusic;Integrated Security=True;Pooling=False;Encrypt=False;Trust Server Certificate=True");
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserArtist>()
+                .HasKey(ua => new { ua.UserId, ua.ArtistId });
+
+            modelBuilder.Entity<UserGenre>()
+                .HasKey(ug => new { ug.UserId, ug.GenreId });
+
+            modelBuilder.Entity<UserSong>()
+                .HasKey(us => new { us.UserId, us.SongId });
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
-
-
-// Alex connectionstring = "Data Source=(localdb)\\.;Initial Catalog=MusikAPI;Integrated Security=True;Pooling=False"
-
-// Andreas connectionstring = "Data Source=(localdb)\\.;Initial Catalog=MusikDb;Integrated Security=True;Pooling=False;Trust Server Certificate=False"
-

@@ -16,9 +16,7 @@ namespace Database.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SongId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -31,9 +29,7 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    SongId = table.Column<int>(type: "int", nullable: false)
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -46,10 +42,7 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Fullname = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GenreId = table.Column<int>(type: "int", nullable: false),
-                    SongId = table.Column<int>(type: "int", nullable: false),
-                    ArtistId = table.Column<int>(type: "int", nullable: false)
+                    Fullname = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -63,9 +56,8 @@ namespace Database.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GenreId = table.Column<int>(type: "int", nullable: false),
                     ArtistId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    GenreId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -80,30 +72,6 @@ namespace Database.Migrations
                         name: "FK_Songs_Genres_GenreId",
                         column: x => x.GenreId,
                         principalTable: "Genres",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ArtistUser",
-                columns: table => new
-                {
-                    ArtistsId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ArtistUser", x => new { x.ArtistsId, x.UsersId });
-                    table.ForeignKey(
-                        name: "FK_ArtistUser_Artists_ArtistsId",
-                        column: x => x.ArtistsId,
-                        principalTable: "Artists",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ArtistUser_Users_UsersId",
-                        column: x => x.UsersId,
-                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -130,67 +98,82 @@ namespace Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GenreUser",
+                name: "UserArtists",
                 columns: table => new
                 {
-                    GenresId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ArtistId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GenreUser", x => new { x.GenresId, x.UsersId });
+                    table.PrimaryKey("PK_UserArtists", x => new { x.UserId, x.ArtistId });
                     table.ForeignKey(
-                        name: "FK_GenreUser_Genres_GenresId",
-                        column: x => x.GenresId,
-                        principalTable: "Genres",
+                        name: "FK_UserArtists_Artists_ArtistId",
+                        column: x => x.ArtistId,
+                        principalTable: "Artists",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_GenreUser_Users_UsersId",
-                        column: x => x.UsersId,
+                        name: "FK_UserArtists_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "SongUser",
+                name: "UserGenres",
                 columns: table => new
                 {
-                    SongsId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    GenreId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SongUser", x => new { x.SongsId, x.UsersId });
+                    table.PrimaryKey("PK_UserGenres", x => new { x.UserId, x.GenreId });
                     table.ForeignKey(
-                        name: "FK_SongUser_Songs_SongsId",
-                        column: x => x.SongsId,
+                        name: "FK_UserGenres_Genres_GenreId",
+                        column: x => x.GenreId,
+                        principalTable: "Genres",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserGenres_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserSongs",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    SongId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserSongs", x => new { x.UserId, x.SongId });
+                    table.ForeignKey(
+                        name: "FK_UserSongs_Songs_SongId",
+                        column: x => x.SongId,
                         principalTable: "Songs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_SongUser_Users_UsersId",
-                        column: x => x.UsersId,
+                        name: "FK_UserSongs_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ArtistUser_UsersId",
-                table: "ArtistUser",
-                column: "UsersId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Credentials_UserId",
                 table: "Credentials",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GenreUser_UsersId",
-                table: "GenreUser",
-                column: "UsersId");
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Songs_ArtistId",
@@ -203,24 +186,34 @@ namespace Database.Migrations
                 column: "GenreId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SongUser_UsersId",
-                table: "SongUser",
-                column: "UsersId");
+                name: "IX_UserArtists_ArtistId",
+                table: "UserArtists",
+                column: "ArtistId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserGenres_GenreId",
+                table: "UserGenres",
+                column: "GenreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserSongs_SongId",
+                table: "UserSongs",
+                column: "SongId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ArtistUser");
-
-            migrationBuilder.DropTable(
                 name: "Credentials");
 
             migrationBuilder.DropTable(
-                name: "GenreUser");
+                name: "UserArtists");
 
             migrationBuilder.DropTable(
-                name: "SongUser");
+                name: "UserGenres");
+
+            migrationBuilder.DropTable(
+                name: "UserSongs");
 
             migrationBuilder.DropTable(
                 name: "Songs");
