@@ -5,25 +5,16 @@ namespace Database.Models
 {
     public class User
     {
-        [Key]
         public int Id { get; set; }
         public string Fullname { get; set; }
 
+        // Navigation Property for one-to-one relationship with Credentials
+        public Credential Credential { get; set; }
 
-
-        [ForeignKey(nameof(GenreId))]
-        public int GenreId { get; set; }
-        public virtual ICollection<Genre>? Genres { get; set; }
-
-
-        [ForeignKey(nameof(SongId))]
-        public int SongId { get; set; }
-        public virtual ICollection<Song>? Songs { get; set; }
-
-
-        [ForeignKey(nameof(ArtistId))]
-        public int ArtistId { get; set; }
-        public virtual ICollection<Artist>? Artists { get; set; }
+        // Navigation Properties for many-to-many relationship with Genres, Artists, and Songs
+        public ICollection<UserGenre>? UserGenres { get; set; }
+        public ICollection<UserArtist>? UserArtists { get; set; }
+        public ICollection<UserSong>? UserSongs { get; set; }
 
     }
 }
