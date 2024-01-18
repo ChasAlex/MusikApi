@@ -1,9 +1,6 @@
 ﻿using Database.Data;
 using Database.Models;
-
 using Microsoft.EntityFrameworkCore;
-
-
 
 namespace Database.Handlers
 {
@@ -21,9 +18,11 @@ namespace Database.Handlers
 
 
 
-        
-
-        
+        //public static async Task<IReadOnlyList<Genre>> ListAllGenresAsync(MusicContext context, int id)
+        //{
+        //    var results = context.Users.ToListAsync();
+        //    return await results;
+        //}
 
 
 
@@ -48,11 +47,11 @@ namespace Database.Handlers
 
         //// Koppla en person till en ny genre, artist och låt // Todo fix name
 
-        // public static async Task ConnectUserToSong(MusicContext context, string id, CreateSongDTO dto)
-        // {
-
-
-        //}
+        //public static async Task<IReadOnlyList<User>> ConntectPerson(MusicContext context)
+        //{
+        //    var results = context.Users.ToListAsync();
+        //    return await results;
+        //}   
 
 
 
