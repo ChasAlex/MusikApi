@@ -18,10 +18,7 @@ namespace Database.Data
 		public DbSet<UserGenre> UserGenres { get; set; }
 		public DbSet<UserSong> UserSongs { get; set; }
 
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
-			optionsBuilder.UseSqlServer("Data Source=(localdb)\\.;Initial Catalog=MusicDb;Integrated Security=True");
-		}
+		
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

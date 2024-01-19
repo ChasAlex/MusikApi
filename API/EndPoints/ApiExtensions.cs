@@ -1,6 +1,11 @@
 ﻿using API.DtoHandlers;
+using API.Models.DTOs.GetTopTracksByArtistDTO;
+using API.Models.DTOs.GetTopTracksByGenreDTO;
+using API.Models.ViewModels;
+using API.Services;
 using Database.Data.Interfaces;
 using Database.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
 namespace API.EndPoints
@@ -86,5 +91,62 @@ namespace API.EndPoints
 			});
 			return musicApi;
 		}
-	}
+
+        public static IEndpointRouteBuilder ExternalApiMusic(this IEndpointRouteBuilder musicApi)
+		{
+            //Hämtar top låtar från en specifik artist
+            musicApi.MapGet("/artist/{artist}", async (string artist, [FromServices] IMusicServices musicServices) =>
+            {
+
+                Toptracks tracks = await musicServices.getTopTrackByArtistAsync(artist);
+
+                GetTopTrackByArtistViewmodel[]? result = tracks?.Track?.Select(track => new GetTopTrackByArtistViewmodel
+                {
+                    Name = track.Name,
+                    Playcount = track.Playcount,
+                }).ToArray();
+
+                return Results.Json(result);
+
+            });
+
+            // Hämta toplåtar för en genre/Tag
+            musicApi.MapGet("/genre/{genre}", async (string genre, [FromServices] IMusicServices musicServices) =>
+            {
+
+                Tracks tracks = await musicServices.getTopTracksByGenreAsync(genre);
+
+                GetTopTracksByGenreViewmodel[]? result = tracks?.Track?.Select(track => new GetTopTracksByGenreViewmodel
+                {
+                    Name = track.Name
+
+                }).ToArray();
+
+                return Results.Json(result);
+
+            });
+
+            //Hämta Bio,name och playcount for en artist
+            musicApi.MapGet("/artistinfo/{artist}", async (string artist, [FromServices] IMusicServices musicServices) =>
+            {
+
+                Models.DTOs.GetArtistInfoDTO.Artist artist1 = await musicServices.GetInfoArtistAsync(artist);
+
+                GetInfoArtistViewmodel result = new GetInfoArtistViewmodel
+                {
+                    Name = artist1.Name,
+                    Playcount = artist1.Stats.Playcount,
+                    Summary = artist1.Bio.Summary
+                };
+                return Results.Json(result);
+
+            });
+
+			return musicApi;
+        }
+
+
+
+
+    }
 }
