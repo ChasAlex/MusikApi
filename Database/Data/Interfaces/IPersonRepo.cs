@@ -4,7 +4,7 @@ namespace Database.Data.Interfaces
 {
     public interface IPersonRepo
     {
-
+        Task<User> GetUserByCredentials(string username, string password);
         Task<IReadOnlyList<User>> GetAllUsers();
         Task<IReadOnlyList<Genre>> GetAllGenresByPersonId(int id);
         Task<IReadOnlyList<Artist>> GetAllArtistsByPersonId(int id);
