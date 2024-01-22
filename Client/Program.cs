@@ -1,10 +1,11 @@
-﻿namespace Client
+﻿
+namespace Client
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            
+            await Login.UserLogin();
         }
     }
 }

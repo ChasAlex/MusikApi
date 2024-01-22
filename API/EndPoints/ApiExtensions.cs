@@ -10,12 +10,24 @@ using System.Net;
 
 namespace API.EndPoints
 {
-	public static class ApiExtensions
+    public class LoginCredential
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+    public static class ApiExtensions
 	{
 		public static IEndpointRouteBuilder MusicApiExtensions(this IEndpointRouteBuilder musicApi)
 		{
 
-			musicApi.Map("api/users", async (IPersonRepo repo) =>
+            musicApi.MapPost("/login", async (IPersonRepo repo, LoginCredential loginCredential) =>
+            {
+                var loggedInUser = await repo.GetUserByCredentials(loginCredential.Username, loginCredential.Password);
+                return loggedInUser;
+            });
+
+
+            musicApi.Map("api/users", async (IPersonRepo repo) =>
 			{
 				var users = await repo.GetAllUsers();
 

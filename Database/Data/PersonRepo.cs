@@ -13,8 +13,18 @@ namespace Database.Data
 			_context = context;
 		}
 
+        public async Task<User> GetUserByCredentials(string username, string password)
+        {
+            var user = await _context.Credentials
+                .Where(u => u.Username == username && u.Password == password)
+                .Join(_context.Users, credential => credential.UserId, user => user.Id, (credential, user) => user)
+                .SingleOrDefaultAsync();
 
-		public async Task<IReadOnlyList<Artist>> GetAllArtistsByPersonId(int id)
+            return user;
+        }
+
+
+        public async Task<IReadOnlyList<Artist>> GetAllArtistsByPersonId(int id)
 		{
 			var artists = await _context.UserArtists
 				.AsNoTracking()
