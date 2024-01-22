@@ -12,7 +12,7 @@ using System.Net.Http.Json;
 
 namespace Client
 {
-    internal class LoggedInUser
+    public class LoggedInUser
     {
         public int Id { get; set; }
         public string Fullname { get; set; }
