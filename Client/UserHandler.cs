@@ -17,7 +17,7 @@ namespace Client
         public void ConnectUsertoArtist(int id,string artist) { }
         public void ConnectUsertoGenre(int id, string genre) { }
         public void ConnectUsertoSong(int id, string song) { }
-        public void GetinfoFromAritst(string aritst) { }
+        public void GetInfoFromAritst(string aritst) { }
 
 
         
@@ -27,6 +27,7 @@ namespace Client
     {
         private HttpClient _client;
         private LoggedInUser _user;
+        
 
         public UserHandler(HttpClient client, LoggedInUser user)
         {
@@ -36,10 +37,29 @@ namespace Client
             
         }
 
+        public async Task GetInfoFromArist(string artist) 
+        {
+            try
+            {
+                string apiUrl = $"http://localhost:5158/artistinfo/{artist}";
 
+                HttpResponseMessage response = await _client.GetAsync(apiUrl);
+                
+                if(response.IsSuccessStatusCode)
+                {
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(responseBody);
+                }
+                else
+                {
+                    Console.WriteLine("Error: " + response.StatusCode);
+                }
+            }
+            catch (HttpRequestException ex)
+            {
 
-
-
-
+                Console.WriteLine($"Exception: {ex.Message}");
+            }
+        } 
     }
 }
