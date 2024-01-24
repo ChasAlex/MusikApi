@@ -9,7 +9,10 @@ namespace Client
             {
                 Console.Write("Search for an Artist: ");
                 string artist = Console.ReadLine();
+                LoggedInUser loggedInUser = new LoggedInUser();
+                UserHandler userHandler = new UserHandler(loggedInUser);
                 await UserHandler.GetInfoFromArist(artist);
+                Console.ReadLine();
             }
         }
     }

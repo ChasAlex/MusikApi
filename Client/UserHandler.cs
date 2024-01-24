@@ -1,8 +1,13 @@
-﻿using System;
+﻿using API.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+
+
 
 namespace Client
 {
@@ -25,14 +30,16 @@ namespace Client
 
     public class UserHandler
     {
-        private static HttpClient _client;
+        private static HttpClient? _client;
         private LoggedInUser _user;
+        private static GetInfoArtistViewmodel _infoArtistViewmodel = new GetInfoArtistViewmodel();
         
 
-        public UserHandler(HttpClient client, LoggedInUser user)
+        public UserHandler(LoggedInUser user)
         {
-            _client = client;
+            _client = new HttpClient();
             _user = user;
+            
 
             
         }
@@ -47,8 +54,11 @@ namespace Client
                 
                 if(response.IsSuccessStatusCode)
                 {
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(responseBody);
+                    _infoArtistViewmodel = JsonSerializer.Deserialize<GetInfoArtistViewmodel>(await response.Content.ReadAsStringAsync());
+                    Console.WriteLine($"Name: {_infoArtistViewmodel.Name}");
+                    Console.WriteLine($"Playcount: {_infoArtistViewmodel.Playcount}");
+                    Console.WriteLine($"Bio: {_infoArtistViewmodel.Summary}");
+                    
                 }
                 else
                 {
