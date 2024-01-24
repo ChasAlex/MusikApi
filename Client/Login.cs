@@ -19,7 +19,7 @@ namespace Client
     }
     internal class Login
     {
-        public static async Task UserLogin()
+        public static async Task<bool> UserLogin()
         {
             Console.WriteLine("Welcome");
             Console.WriteLine("Login");
@@ -46,12 +46,16 @@ namespace Client
                     if (loggedInUser != null)
                     {
                         Console.WriteLine($"Login successful. User: {loggedInUser.Id}. {loggedInUser.Fullname}");
+                        return true;
                     }
                     else
                     {
                         Console.WriteLine("Failed to login");
+                        return false;
+                        
                     }
                 }
+                return false;
             }
         }
     }

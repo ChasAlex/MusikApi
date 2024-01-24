@@ -25,7 +25,7 @@ namespace Client
 
     public class UserHandler
     {
-        private HttpClient _client;
+        private static HttpClient _client;
         private LoggedInUser _user;
         
 
@@ -37,7 +37,7 @@ namespace Client
             
         }
 
-        public async Task GetInfoFromArist(string artist) 
+        public static async Task GetInfoFromArist(string artist) 
         {
             try
             {

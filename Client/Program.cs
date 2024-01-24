@@ -5,7 +5,12 @@ namespace Client
     {
         static async Task Main(string[] args)
         {
-            await Login.UserLogin();
+            if(await Login.UserLogin())
+            {
+                Console.Write("Search for an Artist: ");
+                string artist = Console.ReadLine();
+                await UserHandler.GetInfoFromArist(artist);
+            }
         }
     }
 }
