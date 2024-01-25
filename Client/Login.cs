@@ -1,5 +1,5 @@
 ﻿using System.Net.Http.Json;
-using Client.Models;
+using Client.Models.Viewmodels;
 
 namespace Client
 {
@@ -36,6 +36,7 @@ namespace Client
                         {
                             "See favourite artists",
                             "Add a new favourite artist",
+                            "Search for an Artist",
                             "Log out"
                         };
                         while (loggedInUser != null)
@@ -70,6 +71,9 @@ namespace Client
                     await userHandler.ConnectUserToArtist();
                     break;
                 case 2:
+                    await userHandler.GetInfoFromArist();
+                    break; 
+                case 3:
                     return false;
             }
             return true;
