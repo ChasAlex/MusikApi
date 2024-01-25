@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Json;
-using Client.Models;
 using System.Text.Json;
+using Client.Models.Viewmodels;
 
 namespace Client
 {
@@ -83,6 +83,37 @@ namespace Client
                 await Console.Out.WriteLineAsync($"Failed response code: {response.StatusCode} {response.ReasonPhrase}");
                 Console.Write("Press Enter to return to menu");
                 Console.ReadKey();
+            }
+        }
+
+        public async Task GetInfoFromArist()
+        {
+            try
+            {
+                Console.Write("Search for an Artist: ");
+                string artist = Console.ReadLine();
+                string apiUrl = $"http://localhost:5158/artistinfo/{artist}";
+                
+                HttpResponseMessage response = await _client.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    GetInfoFromArtistViewModel info = JsonSerializer.Deserialize<GetInfoFromArtistViewModel>(await response.Content.ReadAsStringAsync());
+                    Console.WriteLine($"Name: {info.Name}");
+                    Console.WriteLine($"Playcount: {info.Playcount}");
+                    Console.WriteLine($"Bio: {info.Summary}");
+                    Console.ReadLine(); 
+
+                }
+                else
+                {
+                    Console.WriteLine("Error: " + response.StatusCode);
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+
+                Console.WriteLine($"Exception: {ex.Message}");
             }
         }
     }

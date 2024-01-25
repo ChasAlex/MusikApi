@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Client.Models
+namespace Client.Models.Viewmodels
 {
     public class Artist
     {
