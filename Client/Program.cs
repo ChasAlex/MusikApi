@@ -5,7 +5,8 @@ namespace Client
     {
         static async Task Main(string[] args)
         {
-            await Login.UserLogin();
+            Login login = new Login();
+            await login.UserLogin();
         }
     }
 }
