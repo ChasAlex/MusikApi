@@ -1,25 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Text.Json;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
+using Client.Models;
 
 namespace Client
 {
-    public class LoggedInUser
+    public class Login
     {
-        public int Id { get; set; }
-        public string Fullname { get; set; }
-    }
-    internal class Login
-    {
-        public static async Task UserLogin()
+        public async Task UserLogin()
         {
             Console.WriteLine("Welcome");
             Console.WriteLine("Login");
@@ -41,11 +27,28 @@ namespace Client
                 HttpResponseMessage response = await client.PostAsJsonAsync(loginApiUrl, credentials);
                 if (response.IsSuccessStatusCode)
                 {
-                    var loggedInUser = await response.Content.ReadFromJsonAsync<LoggedInUser>();
+                    var loggedInUser = await response.Content.ReadFromJsonAsync<User>();
 
                     if (loggedInUser != null)
                     {
                         Console.WriteLine($"Login successful. User: {loggedInUser.Id}. {loggedInUser.Fullname}");
+                        List<string> mainMenuOptions = new List<string>
+                        {
+                            "See favourite artists",
+                            "Add a new favourite artist",
+                            "Log out"
+                        };
+                        while (loggedInUser != null)
+                        {
+                            Menu menu = new Menu();
+                            int choice = menu.ShowMenu(mainMenuOptions);
+                            bool loggedIn = await ExecuteMainMenuOption(choice, loggedInUser);
+                            if (!loggedIn)
+                            {
+                                Console.WriteLine("Logging out...");
+                                loggedInUser = null;
+                            }
+                        }
                     }
                     else
                     {
@@ -53,6 +56,23 @@ namespace Client
                     }
                 }
             }
+        }
+
+        public async Task<bool> ExecuteMainMenuOption(int optionIndex, User loggedInUser)
+        {
+            UserHandler userHandler = new UserHandler(loggedInUser);
+            switch (optionIndex)
+            {
+                case 0:
+                    await userHandler.ArtistById();
+                    break;
+                case 1:
+                    await userHandler.ConnectUserToArtist();
+                    break;
+                case 2:
+                    return false;
+            }
+            return true;
         }
     }
 }

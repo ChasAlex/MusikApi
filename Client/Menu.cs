@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Client
 {
-    internal class Menu
+    public class Menu
     {
         public int ShowMenu(List<string> menuOptions, string title = "Menu")
         {
@@ -41,23 +36,6 @@ namespace Client
                         return selectedIndex;
                 }
             }
-        }
-        private bool ExecuteMenuOption(int optionIndex)
-        {
-            switch (optionIndex)
-            {
-                case 0:
-                    Console.ReadLine();
-                    break;
-                case 1:
-                    Console.ReadLine();
-                    break;
-                case 2:
-                    Console.WriteLine("Logging out...");
-                    //clear LoggedInUser
-                    break;
-            }
-            return true;
         }
     }
 }
