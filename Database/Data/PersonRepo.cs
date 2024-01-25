@@ -35,8 +35,19 @@ namespace Database.Data
 			return artists;
 		}
 
+        public async Task<IReadOnlyList<Artist>> GetAllArtistsNotConnectedByPersonId(int id)
+        {
+            var notConnectedArtists = await _context.Artists
+			.AsNoTracking()
+			.Where(a => !_context.UserArtists
+                        .Any(u => u.UserId == id && u.ArtistId == a.Id))
+        .ToListAsync();
 
-		public async Task<IReadOnlyList<Genre>> GetAllGenresByPersonId(int id)
+            return notConnectedArtists;
+        }
+
+
+        public async Task<IReadOnlyList<Genre>> GetAllGenresByPersonId(int id)
 		{
 			var personGenres = await _context.UserGenres
 				.AsNoTracking()
