@@ -40,21 +40,21 @@ namespace Client
             {
                 string jsonResponse = await response.Content.ReadAsStringAsync();
                 List<Artist> favouriteArtists = JsonSerializer.Deserialize<List<Artist>>(jsonResponse);
+                List<string> artistNames = favouriteArtists.Select(artist => artist.Name).ToList();
+                Menu menu = new Menu();
+                int IndexChosenArtist = menu.ShowMenu(artistNames, "Favorited artists");
+                string chosenArtist = artistNames[IndexChosenArtist];
+                Artist chosenArtistInfo = favouriteArtists.FirstOrDefault(artist => artist.Name == chosenArtist);
 
-                Console.WriteLine("Favourite Artists\n");
-                foreach (var artist in favouriteArtists)
-                {
-                    await Console.Out.WriteLineAsync($"Name: {artist.Name}\nDescription: {artist.Description}\nCountry: {artist.Country}\n");
-                }
-                Console.Write("Press Enter to return to menu");
-                Console.ReadKey();
+                Console.WriteLine("Favorite artist details\n");
+                await Console.Out.WriteLineAsync($"Name: {chosenArtistInfo.Name}\nDescription: {chosenArtistInfo.Description}\nCountry: {chosenArtistInfo.Country}\n");
             }
             else
             {
                 await Console.Out.WriteLineAsync("No favorite artists registered.");
-                Console.Write("Press Enter to return to menu");
-                Console.ReadKey();
             }
+            Console.Write("Press Enter to return to menu");
+            Console.ReadKey();
         }
         public async Task ConnectUserToArtist()
         {
