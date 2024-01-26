@@ -9,7 +9,7 @@ namespace Client
     {
         //public Login() { }
         //public AllaUsers() { }
-        //public GenresByid(int id) { }
+        public void GenresByid(User loggedInUser) { }
         public void ArtistById(User loggedInUser) { }
         //public SongByid(int id) { }
         public void ConnectUserToArtist(User loggedInUser) { }
@@ -31,6 +31,30 @@ namespace Client
             _client = new HttpClient();
             _user = user;
         }
+
+        public async Task GenresById()
+        {
+            int userId = _user.Id;
+            string genreUserIdApiURL = $"http://localhost:5158/api/genres/{userId}";
+            HttpResponseMessage response = await _client.GetAsync(genreUserIdApiURL);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                List<Genre> favouriteGenres = JsonSerializer.Deserialize<List<Genre>>(jsonResponse);
+                Console.WriteLine("Favourite Genres\n");
+                foreach (var genre in favouriteGenres)
+                {
+                    await Console.Out.WriteLineAsync($"{genre.Title}");
+                }
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync("No favorite genres registered.");
+            }
+            Console.Write("Press Enter to return to menu");
+            Console.ReadKey();
+        }
+
         public async Task ArtistById()
         {
             int userId = _user.Id;
