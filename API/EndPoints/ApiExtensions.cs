@@ -16,9 +16,9 @@ namespace API.EndPoints
         public string Password { get; set; }
     }
     public static class ApiExtensions
-	{
-		public static IEndpointRouteBuilder MusicApiExtensions(this IEndpointRouteBuilder musicApi)
-		{
+    {
+        public static IEndpointRouteBuilder MusicApiExtensions(this IEndpointRouteBuilder musicApi)
+        {
 
             musicApi.MapPost("/login", async (IPersonRepo repo, LoginCredential loginCredential) =>
             {
@@ -28,42 +28,42 @@ namespace API.EndPoints
 
 
             musicApi.Map("api/users", async (IPersonRepo repo) =>
-			{
-				var users = await repo.GetAllUsers();
+            {
+                var users = await repo.GetAllUsers();
 
-				if (users == null || !users.Any())
-				{
-					return Results.NotFound();
-				}
+                if (users == null || !users.Any())
+                {
+                    return Results.NotFound();
+                }
 
-				return Results.Ok(Handler.CreateUserDto(users));
-			});
-
-
-			musicApi.Map("api/genres/{id}", async (IPersonRepo repo, int id) =>
-			{
-				var genres = await repo.GetAllGenresByPersonId(id);
-
-				if (genres == null || !genres.Any())
-				{
-					return Results.NotFound();
-				}
-
-				return Results.Ok(Handler.CreateGenreDto(genres));
-			});
+                return Results.Ok(Handler.CreateUserDto(users));
+            });
 
 
-			musicApi.Map("api/artists/{id}", async (IPersonRepo repo, int id) =>
-			{
-				var artists = await repo.GetAllArtistsByPersonId(id);
+            musicApi.Map("api/genres/{id}", async (IPersonRepo repo, int id) =>
+            {
+                var genres = await repo.GetAllGenresByPersonId(id);
 
-				if (artists == null || !artists.Any())
-				{
-					return Results.NotFound();
-				}
+                if (genres == null || !genres.Any())
+                {
+                    return Results.NotFound();
+                }
 
-				return Results.Ok(Handler.CreateArtistDto(artists));
-			});
+                return Results.Ok(Handler.CreateGenreDto(genres));
+            });
+
+
+            musicApi.Map("api/artists/{id}", async (IPersonRepo repo, int id) =>
+            {
+                var artists = await repo.GetAllArtistsByPersonId(id);
+
+                if (artists == null || !artists.Any())
+                {
+                    return Results.NotFound();
+                }
+
+                return Results.Ok(Handler.CreateArtistDto(artists));
+            });
 
 
             musicApi.Map("api/artists/notconnected/{id}", async (IPersonRepo repo, int id) =>
@@ -80,50 +80,50 @@ namespace API.EndPoints
 
 
             musicApi.Map("api/songs/{id}", async (IPersonRepo repo, int id) =>
-			{
-				var songs = await repo.GetAllSongsByPersonId(id);
+            {
+                var songs = await repo.GetAllSongsByPersonId(id);
 
-				if (songs == null || !songs.Any())
-				{
-					return Results.NotFound();
-				}
+                if (songs == null || !songs.Any())
+                {
+                    return Results.NotFound();
+                }
 
-				return Results.Ok(Handler.CreateSongDto(songs));
-			});
-
-
-			//Adds new connection between user and artist
-			musicApi.Map("/userartist", async (IPersonRepo repo, UserArtist userArtist) =>
-			{
-				await repo.AddUserArtistAsync(userArtist);
-				return Results.StatusCode((int)HttpStatusCode.Created);
-			});
+                return Results.Ok(Handler.CreateSongDto(songs));
+            });
 
 
-			//Adds new connection between user and genre
-			musicApi.Map("/usergenre", async (IPersonRepo repo, UserGenre userGenre) =>
-			{
-				await repo.AddUserGenreAsync(userGenre);
-				return Results.StatusCode((int)HttpStatusCode.Created);
-			});
+            //Adds new connection between user and artist
+            musicApi.Map("/userartist", async (IPersonRepo repo, UserArtist userArtist) =>
+            {
+                await repo.AddUserArtistAsync(userArtist);
+                return Results.StatusCode((int)HttpStatusCode.Created);
+            });
 
 
-			//Adds new connection between user and song
-			musicApi.Map("/usersong", async (IPersonRepo repo, UserSong userSong) =>
-			{
-				await repo.AddUserSongAsync(userSong);
-				return Results.StatusCode((int)HttpStatusCode.Created);
-			});
-			return musicApi;
-		}
+            //Adds new connection between user and genre
+            musicApi.Map("/usergenre", async (IPersonRepo repo, UserGenre userGenre) =>
+            {
+                await repo.AddUserGenreAsync(userGenre);
+                return Results.StatusCode((int)HttpStatusCode.Created);
+            });
+
+
+            //Adds new connection between user and song
+            musicApi.Map("/usersong", async (IPersonRepo repo, UserSong userSong) =>
+            {
+                await repo.AddUserSongAsync(userSong);
+                return Results.StatusCode((int)HttpStatusCode.Created);
+            });
+            return musicApi;
+        }
 
         public static IEndpointRouteBuilder ExternalApiMusic(this IEndpointRouteBuilder musicApi)
-		{
+        {
             //Hämtar top låtar från en specifik artist
             musicApi.MapGet("/artist/{artist}", async (string artist, [FromServices] IMusicServices musicServices) =>
             {
 
-                Toptracks tracks = await musicServices.getTopTrackByArtistAsync(artist);
+                Toptracks tracks = await musicServices.GetTopTrackByArtistAsync(artist);
 
                 GetTopTrackByArtistViewmodel[]? result = tracks?.Track?.Select(track => new GetTopTrackByArtistViewmodel
                 {
@@ -139,7 +139,7 @@ namespace API.EndPoints
             musicApi.MapGet("/genre/{genre}", async (string genre, [FromServices] IMusicServices musicServices) =>
             {
 
-                Tracks tracks = await musicServices.getTopTracksByGenreAsync(genre);
+                Tracks tracks = await musicServices.GetTopTracksByGenreAsync(genre);
 
                 GetTopTracksByGenreViewmodel[]? result = tracks?.Track?.Select(track => new GetTopTracksByGenreViewmodel
                 {
@@ -167,7 +167,7 @@ namespace API.EndPoints
 
             });
 
-			return musicApi;
+            return musicApi;
         }
 
 
