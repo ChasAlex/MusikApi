@@ -7,16 +7,13 @@ namespace Client
 
     interface IUserHandler
     {
-        //public GenresByid(int id) { }
         public void ArtistById(User loggedInUser) { }
+        public void GenresByid(User loggedInUser) { }
         public void SongByid(User loggedInUser) { }
         public void ConnectUserToArtist(User loggedInUser) { }
         public void ConnectUsertoGenre(int id, string genre) { }
         public void ConnectUsertoSong(int id, string song) { }
-        public void GetinfoFromAritst(string aritst) { }
-
-
-        
+        public void GetinfoFromAritst(string aritst) { } 
     }
 
     public class UserHandler
@@ -29,6 +26,30 @@ namespace Client
             _client = new HttpClient();
             _user = user;
         }
+
+        public async Task GenresById()
+        {
+            int userId = _user.Id;
+            string genreUserIdApiURL = $"http://localhost:5158/api/genres/{userId}";
+            HttpResponseMessage response = await _client.GetAsync(genreUserIdApiURL);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                List<Genre> favouriteGenres = JsonSerializer.Deserialize<List<Genre>>(jsonResponse);
+                Console.WriteLine("Favourite Genres\n");
+                foreach (var genre in favouriteGenres)
+                {
+                    await Console.Out.WriteLineAsync($"{genre.Title}");
+                }
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync("No favorite genres registered.");
+            }
+            Console.Write("Press Enter to return to menu");
+            Console.ReadKey();
+        }
+
         public async Task ArtistById()
         {
             int userId = _user.Id;
@@ -38,21 +59,20 @@ namespace Client
             {
                 string jsonResponse = await response.Content.ReadAsStringAsync();
                 List<Artist> favouriteArtists = JsonSerializer.Deserialize<List<Artist>>(jsonResponse);
-
-                Console.WriteLine("Favourite Artists\n");
-                foreach (var artist in favouriteArtists)
-                {
-                    await Console.Out.WriteLineAsync($"Name: {artist.Name}\nDescription: {artist.Description}\nCountry: {artist.Country}\n");
-                }
-                Console.Write("Press Enter to return to menu");
-                Console.ReadKey();
+                List<string> artistNames = favouriteArtists.Select(artist => artist.Name).ToList();
+                Menu menu = new Menu();
+                int IndexChosenArtist = menu.ShowMenu(artistNames, "Favorited artists");
+                string chosenArtist = artistNames[IndexChosenArtist];
+                Artist chosenArtistInfo = favouriteArtists.FirstOrDefault(artist => artist.Name == chosenArtist);
+                Console.WriteLine("Favorite artist details\n");
+                await Console.Out.WriteLineAsync($"Name: {chosenArtistInfo.Name}\nDescription: {chosenArtistInfo.Description}\nCountry: {chosenArtistInfo.Country}\n");
             }
             else
             {
                 await Console.Out.WriteLineAsync("No favorite artists registered.");
-                Console.Write("Press Enter to return to menu");
-                Console.ReadKey();
             }
+            Console.Write("Press Enter to return to menu");
+            Console.ReadKey();
         }
 
 
@@ -82,35 +102,62 @@ namespace Client
 
         public async Task ConnectUserToArtist()
         {
-            //make an api that retrieves a list of all not connected to user
-            //ask which artist the user wants to add to favourites, or let the user exit the method
+            int chosenArtistId = await GetArtistsNotConnectedToUser();
 
             string userartistApiURL = "http://localhost:5158/userartist";
-            Console.WriteLine("Artist Id:");
-            int artistId = int.Parse(Console.ReadLine());
 
             var userArtist = new
             {
                 UserId = _user.Id,
-                ArtistId = artistId
+                ArtistId = chosenArtistId
             };
 
             HttpResponseMessage response = await _client.PostAsJsonAsync(userartistApiURL, userArtist);
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("Connection to artist added successfully!");
-                Console.Write("Press Enter to return to menu");
-                Console.ReadKey();
+                if (chosenArtistId != 0) 
+                {
+                    await Console.Out.WriteLineAsync("Success!");
+                }
+                else
+                {
+                    await Console.Out.WriteLineAsync("No artists found.");
+                }
             }
             else
             {
                 await Console.Out.WriteLineAsync($"Failed response code: {response.StatusCode} {response.ReasonPhrase}");
-                Console.Write("Press Enter to return to menu");
-                Console.ReadKey();
             }
+            Console.Write("Press Enter to return to menu");
+            Console.ReadKey();
         }
 
-        public async Task GetInfoFromArist()
+        public async Task<int> GetArtistsNotConnectedToUser()
+        {
+            int userId = _user.Id;
+            string artistNotConUserIdApiURL = $"http://localhost:5158/api/artists/notconnected/{userId}";
+            HttpResponseMessage response = await _client.GetAsync(artistNotConUserIdApiURL);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                List<Artist> AllNonConnectedArtists = JsonSerializer.Deserialize<List<Artist>>(jsonResponse);
+                List<string> artistNames = AllNonConnectedArtists.Select(artist => artist.Name).ToList();
+                Menu menu = new Menu();
+                int newFavArtistChoice = menu.ShowMenu(artistNames, "Artists you haven't listed as favourites yet:");
+                string newFavArtistName = artistNames[newFavArtistChoice];
+                Artist newFavArtist = AllNonConnectedArtists.FirstOrDefault(artist => artist.Name == newFavArtistName);
+                return newFavArtist.Id;
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync("Something went wrong.");
+                return 0;
+            }
+        }
+    
+
+
+public async Task GetInfoFromArist()
         {
             try
             {
