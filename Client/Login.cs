@@ -34,8 +34,9 @@ namespace Client
                         Console.WriteLine($"Login successful. User: {loggedInUser.Id}. {loggedInUser.Fullname}");
                         List<string> mainMenuOptions = new List<string>
                         {
-                            "See favourite artists",
-                            "Add a new favourite artist",
+                            "See favorite artists",
+                            "See favorite songs",
+                            "Add a new favorite artist",
                             "Search for an Artist",
                             "Log out"
                         };
@@ -68,12 +69,15 @@ namespace Client
                     await userHandler.ArtistById();
                     break;
                 case 1:
-                    await userHandler.ConnectUserToArtist();
+                    await userHandler.SongById();
                     break;
                 case 2:
+                    await userHandler.ConnectUserToArtist();
+                    break;
+                case 3:
                     await userHandler.GetInfoFromArist();
                     break; 
-                case 3:
+                case 4:
                     return false;
             }
             return true;

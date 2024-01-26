@@ -7,11 +7,9 @@ namespace Client
 
     interface IUserHandler
     {
-        //public Login() { }
-        //public AllaUsers() { }
         //public GenresByid(int id) { }
         public void ArtistById(User loggedInUser) { }
-        //public SongByid(int id) { }
+        public void SongByid(User loggedInUser) { }
         public void ConnectUserToArtist(User loggedInUser) { }
         public void ConnectUsertoGenre(int id, string genre) { }
         public void ConnectUsertoSong(int id, string song) { }
@@ -56,6 +54,32 @@ namespace Client
                 Console.ReadKey();
             }
         }
+
+
+        public async Task SongById()
+        {
+            int userId = _user.Id;
+            string songUserIdApiURL = $"http://localhost:5158/api/songs/{userId}";
+            HttpResponseMessage response = await _client.GetAsync(songUserIdApiURL);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                List<Song> favoriteSongs = JsonSerializer.Deserialize<List<Song>>(jsonResponse);
+
+                Console.WriteLine("Favorite Songs\n");
+                foreach (var song in favoriteSongs)
+                {
+                    await Console.Out.WriteLineAsync($"{song.Name}");
+                }
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync("No favorite songs registered.");
+            }
+            Console.Write("Press Enter to return to menu");
+            Console.ReadKey();
+        }
+
         public async Task ConnectUserToArtist()
         {
             //make an api that retrieves a list of all not connected to user
