@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Errors\**" />
+    <Content Remove="Errors\**" />
+    <EmbeddedResource Remove="Errors\**" />
+    <None Remove="Errors\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.26" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.26" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.26">
@@ -17,10 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Database\Database.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Errors\" />
   </ItemGroup>
 
 </Project>
