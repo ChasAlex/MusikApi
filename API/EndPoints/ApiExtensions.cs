@@ -66,7 +66,20 @@ namespace API.EndPoints
 			});
 
 
-			musicApi.Map("api/songs/{id}", async (IPersonRepo repo, int id) =>
+            musicApi.Map("api/artists/notconnected/{id}", async (IPersonRepo repo, int id) =>
+            {
+                var artists = await repo.GetAllArtistsNotConnectedByPersonId(id);
+
+                if (artists == null || !artists.Any())
+                {
+                    return Results.NotFound();
+                }
+
+                return Results.Ok(Handler.CreateArtistDto(artists));
+            });
+
+
+            musicApi.Map("api/songs/{id}", async (IPersonRepo repo, int id) =>
 			{
 				var songs = await repo.GetAllSongsByPersonId(id);
 

@@ -45,7 +45,6 @@ namespace Client
                 int IndexChosenArtist = menu.ShowMenu(artistNames, "Favorited artists");
                 string chosenArtist = artistNames[IndexChosenArtist];
                 Artist chosenArtistInfo = favouriteArtists.FirstOrDefault(artist => artist.Name == chosenArtist);
-
                 Console.WriteLine("Favorite artist details\n");
                 await Console.Out.WriteLineAsync($"Name: {chosenArtistInfo.Name}\nDescription: {chosenArtistInfo.Description}\nCountry: {chosenArtistInfo.Country}\n");
             }
@@ -58,35 +57,62 @@ namespace Client
         }
         public async Task ConnectUserToArtist()
         {
-            //make an api that retrieves a list of all not connected to user
-            //ask which artist the user wants to add to favourites, or let the user exit the method
+            int chosenArtistId = await GetArtistsNotConnectedToUser();
 
             string userartistApiURL = "http://localhost:5158/userartist";
-            Console.WriteLine("Artist Id:");
-            int artistId = int.Parse(Console.ReadLine());
 
             var userArtist = new
             {
                 UserId = _user.Id,
-                ArtistId = artistId
+                ArtistId = chosenArtistId
             };
 
             HttpResponseMessage response = await _client.PostAsJsonAsync(userartistApiURL, userArtist);
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("Connection to artist added successfully!");
-                Console.Write("Press Enter to return to menu");
-                Console.ReadKey();
+                if (chosenArtistId != 0) 
+                {
+                    await Console.Out.WriteLineAsync("Success!");
+                }
+                else
+                {
+                    await Console.Out.WriteLineAsync("No artists found.");
+                }
             }
             else
             {
                 await Console.Out.WriteLineAsync($"Failed response code: {response.StatusCode} {response.ReasonPhrase}");
-                Console.Write("Press Enter to return to menu");
-                Console.ReadKey();
             }
+            Console.Write("Press Enter to return to menu");
+            Console.ReadKey();
         }
 
-        public async Task GetInfoFromArist()
+        public async Task<int> GetArtistsNotConnectedToUser()
+        {
+            int userId = _user.Id;
+            string artistNotConUserIdApiURL = $"http://localhost:5158/api/artists/notconnected/{userId}";
+            HttpResponseMessage response = await _client.GetAsync(artistNotConUserIdApiURL);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                List<Artist> AllNonConnectedArtists = JsonSerializer.Deserialize<List<Artist>>(jsonResponse);
+                List<string> artistNames = AllNonConnectedArtists.Select(artist => artist.Name).ToList();
+                Menu menu = new Menu();
+                int newFavArtistChoice = menu.ShowMenu(artistNames, "Artists you haven't listed as favourites yet:");
+                string newFavArtistName = artistNames[newFavArtistChoice];
+                Artist newFavArtist = AllNonConnectedArtists.FirstOrDefault(artist => artist.Name == newFavArtistName);
+                return newFavArtist.Id;
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync("Something went wrong.");
+                return 0;
+            }
+        }
+    
+
+
+public async Task GetInfoFromArist()
         {
             try
             {
