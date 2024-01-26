@@ -36,6 +36,7 @@ namespace Client
                         {
                             "See favorite artists",
                             "See favorite genres",
+                            "See favorite songs",
                             "Add a new favorite artist",
                             "Search for an Artist",
                             "Log out"
@@ -72,12 +73,15 @@ namespace Client
                     await userHandler.GenresById();
                     break;
                 case 2:
-                    await userHandler.ConnectUserToArtist();
+                    await userHandler.SongById();
                     break;
                 case 3:
+                    await userHandler.ConnectUserToArtist();
+                    break;
+                case 4:
                     await userHandler.GetInfoFromArist();
                     break; 
-                case 4:
+                case 5:
                     return false;
             }
             return true;

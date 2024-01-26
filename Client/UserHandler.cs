@@ -7,18 +7,13 @@ namespace Client
 
     interface IUserHandler
     {
-        //public Login() { }
-        //public AllaUsers() { }
-        public void GenresByid(User loggedInUser) { }
         public void ArtistById(User loggedInUser) { }
-        //public SongByid(int id) { }
+        public void GenresByid(User loggedInUser) { }
+        public void SongByid(User loggedInUser) { }
         public void ConnectUserToArtist(User loggedInUser) { }
         public void ConnectUsertoGenre(int id, string genre) { }
         public void ConnectUsertoSong(int id, string song) { }
-        public void GetinfoFromAritst(string aritst) { }
-
-
-        
+        public void GetinfoFromAritst(string aritst) { } 
     }
 
     public class UserHandler
@@ -79,6 +74,32 @@ namespace Client
             Console.Write("Press Enter to return to menu");
             Console.ReadKey();
         }
+
+
+        public async Task SongById()
+        {
+            int userId = _user.Id;
+            string songUserIdApiURL = $"http://localhost:5158/api/songs/{userId}";
+            HttpResponseMessage response = await _client.GetAsync(songUserIdApiURL);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                List<Song> favoriteSongs = JsonSerializer.Deserialize<List<Song>>(jsonResponse);
+
+                Console.WriteLine("Favorite Songs\n");
+                foreach (var song in favoriteSongs)
+                {
+                    await Console.Out.WriteLineAsync($"{song.Name}");
+                }
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync("No favorite songs registered.");
+            }
+            Console.Write("Press Enter to return to menu");
+            Console.ReadKey();
+        }
+
         public async Task ConnectUserToArtist()
         {
             int chosenArtistId = await GetArtistsNotConnectedToUser();
