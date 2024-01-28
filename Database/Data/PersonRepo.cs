@@ -24,6 +24,34 @@ namespace Database.Data
         }
 
 
+        public async Task CreateNewUser(string fullname, string username, string password)
+        {
+            try
+            {
+                var userExists = await _context.Credentials.AnyAsync(c => c.Username == username);
+                if (userExists)
+                {
+                    throw new InvalidOperationException("Username already exists.");
+                }
+                else
+                {
+                    var newUser = new User { Fullname = fullname };
+                    _context.Users.AddAsync(newUser);
+                    await _context.SaveChangesAsync();
+
+                    var newCredential = new Credential { UserId = newUser.Id, Username = username, Password = password };
+                    _context.Credentials.Add(newCredential);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync($"Error: {ex.Message}");
+                throw;
+            }
+        }
+
+
         public async Task<IReadOnlyList<Artist>> GetAllArtistsByPersonId(int id)
         {
             var artists = await _context.UserArtists
