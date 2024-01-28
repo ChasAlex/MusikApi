@@ -15,6 +15,13 @@ namespace API.EndPoints
         public string Username { get; set; }
         public string Password { get; set; }
     }
+    public class SignupInfo
+    {
+        public string Fullname { get; set; }
+        public string Username { get; set; }
+        public string Password { set; get; }
+    }
+
     public static class ApiExtensions
     {
         public static IEndpointRouteBuilder MusicApiExtensions(this IEndpointRouteBuilder musicApi)
@@ -24,6 +31,30 @@ namespace API.EndPoints
             {
                 var loggedInUser = await repo.GetUserByCredentials(loginCredential.Username, loginCredential.Password);
                 return loggedInUser;
+            });
+
+
+            //work in progress for signup
+            musicApi.MapPost("/signup", async (IPersonRepo repo, SignupInfo signupInfo) =>
+            {
+                string fullname = signupInfo.Fullname;
+                string username = signupInfo.Username;
+                string password = signupInfo.Password;
+                try
+                {
+                    await repo.CreateNewUser(fullname, username, password);
+                    return Results.StatusCode((int)HttpStatusCode.Created);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Console.WriteLine($"Conflict during user signup: {ex.Message}");
+                    return Results.StatusCode((int)HttpStatusCode.Conflict);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred during user signup: {ex.Message}");
+                    return Results.StatusCode((int)HttpStatusCode.InternalServerError);
+                }
             });
 
 
