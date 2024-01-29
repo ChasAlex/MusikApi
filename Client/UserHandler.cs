@@ -1,22 +1,12 @@
-﻿using System.Net.Http.Json;
+﻿using Client.Models.Viewmodels;
+using System.Net.Http.Json;
 using System.Text.Json;
-using Client.Models.Viewmodels;
 
 namespace Client
 {
 
-    interface IUserHandler
-    {
-        public void ArtistById(User loggedInUser) { }
-        public void GenresByid(User loggedInUser) { }
-        public void SongByid(User loggedInUser) { }
-        public void ConnectUserToArtist(User loggedInUser) { }
-        public void ConnectUsertoGenre(int id, string genre) { }
-        public void ConnectUsertoSong(int id, string song) { }
-        public void GetinfoFromAritst(string aritst) { } 
-    }
 
-    public class UserHandler
+    public class UserHandler : IUserHandler
     {
         private HttpClient _client;
         private User _user;
@@ -115,7 +105,7 @@ namespace Client
             HttpResponseMessage response = await _client.PostAsJsonAsync(userartistApiURL, userArtist);
             if (response.IsSuccessStatusCode)
             {
-                if (chosenArtistId != 0) 
+                if (chosenArtistId != 0)
                 {
                     await Console.Out.WriteLineAsync("Success!");
                 }
@@ -154,17 +144,17 @@ namespace Client
                 return 0;
             }
         }
-    
 
 
-public async Task GetInfoFromArist()
+
+        public async Task GetInfoFromArist()
         {
             try
             {
                 Console.Write("Search for an Artist: ");
                 string artist = Console.ReadLine();
                 string apiUrl = $"http://localhost:5158/artistinfo/{artist}";
-                
+
                 HttpResponseMessage response = await _client.GetAsync(apiUrl);
 
                 if (response.IsSuccessStatusCode)
@@ -173,7 +163,7 @@ public async Task GetInfoFromArist()
                     Console.WriteLine($"Name: {info.Name}");
                     Console.WriteLine($"Playcount: {info.Playcount}");
                     Console.WriteLine($"Bio: {info.Summary}");
-                    Console.ReadLine(); 
+                    Console.ReadLine();
 
                 }
                 else

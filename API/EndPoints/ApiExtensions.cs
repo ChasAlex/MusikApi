@@ -1,4 +1,5 @@
 ﻿using API.DtoHandlers;
+using API.Models;
 using API.Models.DTOs.GetTopTracksByArtistDTO;
 using API.Models.DTOs.GetTopTracksByGenreDTO;
 using API.Models.ViewModels;
@@ -10,17 +11,6 @@ using System.Net;
 
 namespace API.EndPoints
 {
-    public class LoginCredential
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-    }
-    public class SignupInfo
-    {
-        public string Fullname { get; set; }
-        public string Username { get; set; }
-        public string Password { set; get; }
-    }
 
     public static class ApiExtensions
     {
@@ -37,12 +27,12 @@ namespace API.EndPoints
             //work in progress for signup
             musicApi.MapPost("/signup", async (IPersonRepo repo, SignupInfo signupInfo) =>
             {
-                string fullname = signupInfo.Fullname;
-                string username = signupInfo.Username;
+                string fullName = signupInfo.Fullname;
+                string userName = signupInfo.Username;
                 string password = signupInfo.Password;
                 try
                 {
-                    await repo.CreateNewUser(fullname, username, password);
+                    await repo.CreateNewUser(fullName, userName, password);
                     return Results.StatusCode((int)HttpStatusCode.Created);
                 }
                 catch (InvalidOperationException ex)

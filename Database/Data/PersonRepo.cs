@@ -66,10 +66,10 @@ namespace Database.Data
         public async Task<IReadOnlyList<Artist>> GetAllArtistsNotConnectedByPersonId(int id)
         {
             var notConnectedArtists = await _context.Artists
-            .AsNoTracking()
-            .Where(a => !_context.UserArtists
-                        .Any(u => u.UserId == id && u.ArtistId == a.Id))
-        .ToListAsync();
+                .AsNoTracking()
+                .Where(a => !_context.UserArtists
+                .Any(u => u.UserId == id && u.ArtistId == a.Id))
+                .ToListAsync();
 
             return notConnectedArtists;
         }

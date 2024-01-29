@@ -1,5 +1,6 @@
-﻿using System.Net.Http.Json;
-using Client.Models.Viewmodels;
+﻿using Client.Models.Viewmodels;
+using Client.PasswordHandler;
+using System.Net.Http.Json;
 
 namespace Client
 {
@@ -21,7 +22,7 @@ namespace Client
                     Console.WriteLine("Enter username: ");
                     string usernameInput = Console.ReadLine().ToLower();
                     Console.WriteLine("Enter password: ");
-                    string passwordInput = Console.ReadLine();
+                    string passwordInput = PasswordManager.HideAndReadPassword();
 
                     string loginApiUrl = "http://localhost:5158/login";
 
@@ -149,7 +150,7 @@ namespace Client
                     break;
                 case 4:
                     await userHandler.GetInfoFromArist();
-                    break; 
+                    break;
                 case 5:
                     return false;
             }
