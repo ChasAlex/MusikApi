@@ -1,22 +1,10 @@
-﻿using System.Net.Http.Json;
+﻿using Client.Models.Viewmodels;
+using System.Net.Http.Json;
 using System.Text.Json;
-using Client.Models.Viewmodels;
 
 namespace Client
 {
-
-    interface IUserHandler
-    {
-        public void ArtistByIdAsync(User loggedInUser) { }
-        public void SongByidAsync(User loggedInUser) { }
-        public void GenresByidAsync(User loggedInUser) { }
-        public void ConnectUserToArtistAsync(User loggedInUser) { }
-        public void ConnectUsertoSongAsync(User loggedInUser) { }
-        public void ConnectUsertoGenreAsync(User loggedInUser) { }
-        public void GetinfoFromAritst(string aritst) { }
-    }
-
-    public class UserHandler
+    public class UserHandler : IUserHandler
     {
         private HttpClient _client;
         private User _user;
@@ -280,13 +268,11 @@ namespace Client
             {
                 Console.Write("Search for an Artist: ");
                 string artist = Console.ReadLine();
-
                 string apiUrlinfo = $"http://localhost:5158/artistinfo/{artist}";
                 string apiAddUrl = "http://localhost:5158/addartist";
                 string UserToArtistUrl = "";
                 
                 HttpResponseMessage response = await _client.GetAsync(apiUrlinfo);
-
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -310,6 +296,7 @@ namespace Client
                     }
                     
                     Console.ReadLine(); 
+
 
 
                 }

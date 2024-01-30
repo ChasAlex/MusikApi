@@ -40,8 +40,8 @@ namespace API.EndPoints
             //Signup: Checks if username is free and if so creates a new user
             musicApi.MapPost("/signup", async (IPersonRepo repo, SignupInfo signupInfo) =>
             {
-                string fullname = signupInfo.Fullname;
-                string username = signupInfo.Username;
+                string fullName = signupInfo.Fullname;
+                string userName = signupInfo.Username;
                 string password = signupInfo.Password;
                 try
                 {
