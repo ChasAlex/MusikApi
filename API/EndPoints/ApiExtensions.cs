@@ -1,4 +1,5 @@
 ﻿using API.DtoHandlers;
+using API.Models;
 using API.Models.DTOs.GetTopTracksByArtistDTO;
 using API.Models.DTOs.GetTopTracksByGenreDTO;
 using API.Models.ViewModels;
@@ -10,17 +11,6 @@ using System.Net;
 
 namespace API.EndPoints
 {
-    public class LoginCredential
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-    }
-    public class SignupInfo
-    {
-        public string Fullname { get; set; }
-        public string Username { get; set; }
-        public string Password { set; get; }
-    }
 
     public static class ApiExtensions
     {
@@ -145,6 +135,25 @@ namespace API.EndPoints
                 await repo.AddUserSongAsync(userSong);
                 return Results.StatusCode((int)HttpStatusCode.Created);
             });
+
+            musicApi.Map("/addartist", async (IPersonRepo repo,ArtistAddInfo artist) =>
+            {
+
+                var artistToadd = await repo.AddArtistbyNameAsync(artist.Name);
+
+                UserArtist newArist = new UserArtist() {
+                    ArtistId = artistToadd.Id,
+                    UserId = artist.Id                               
+                };
+
+                await repo.AddUserArtistAsync(newArist);
+                return Results.StatusCode((int)HttpStatusCode.OK);
+
+
+            });
+
+
+
             return musicApi;
         }
 
@@ -197,6 +206,11 @@ namespace API.EndPoints
                 return Results.Json(result);
 
             });
+
+
+            //Lägger till en Artist till en användare via apiet
+
+            
 
             return musicApi;
         }

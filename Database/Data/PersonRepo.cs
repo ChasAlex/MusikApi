@@ -196,6 +196,19 @@ namespace Database.Data
             _context.UserSongs.Add(newUserSong);
             await _context.SaveChangesAsync();
         }
+        
+
+
+        public async Task<Artist> AddArtistbyNameAsync(string artistname)
+        {
+            
+            Artist newArtist = new Artist { Name = artistname };
+            
+            _context.Artists.Add(newArtist);
+            await _context.SaveChangesAsync();
+            return newArtist;
+             
+        }
 
         public async Task SaveChanges()
         {

@@ -11,9 +11,9 @@ namespace Database.Models
         public string? Country { get; set; }
 
         // Navigation Property for one-to-many relationship with Songs
-        public ICollection<Song> Songs { get; set; }
+        public ICollection<Song>? Songs { get; set; }
 
         // Navigation Property for many-to-many relationship with Users
-        public ICollection<UserArtist> UserArtists { get; set; }
+        public ICollection<UserArtist>? UserArtists { get; set; }
     }
 }
