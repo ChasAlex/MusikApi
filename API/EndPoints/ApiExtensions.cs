@@ -45,7 +45,7 @@ namespace API.EndPoints
                 string password = signupInfo.Password;
                 try
                 {
-                    await repo.CreateNewUserAsync(fullname, username, password);
+                    await repo.CreateNewUserAsync(fullName, userName, password);
                     return Results.StatusCode((int)HttpStatusCode.Created);
                 }
                 catch (InvalidOperationException ex)
