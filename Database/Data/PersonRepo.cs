@@ -1,4 +1,4 @@
-﻿using Database.Data.Interfaces;
+using Database.Data.Interfaces;
 using Database.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +13,18 @@ namespace Database.Data
             _context = context;
         }
 
-        public async Task<User> GetUserByCredentials(string username, string password)
+        //Gets all registered users
+        public async Task<IReadOnlyList<User>> GetAllUsersAsync()
+        {
+            var persons = await _context.Users
+                .AsNoTracking()
+                .ToListAsync();
+
+            return persons;
+        }
+
+        //User login: Checks matching credentials and returns the connected user info
+        public async Task<User> GetUserByCredentialsAsync(string username, string password)
         {
             var user = await _context.Credentials
                 .Where(u => u.Username == username && u.Password == password)
@@ -23,8 +34,8 @@ namespace Database.Data
             return user;
         }
 
-
-        public async Task CreateNewUser(string fullname, string username, string password)
+        //User signup: Checks if username is taken, then creates new user and credentials
+        public async Task CreateNewUserAsync(string fullname, string username, string password)
         {
             try
             {
@@ -51,8 +62,8 @@ namespace Database.Data
             }
         }
 
-
-        public async Task<IReadOnlyList<Artist>> GetAllArtistsByPersonId(int id)
+        //Gets all users favorite artists
+        public async Task<IReadOnlyList<Artist>> GetAllArtistsByUserIdAsync(int id)
         {
             var artists = await _context.UserArtists
                 .AsNoTracking()
@@ -63,31 +74,8 @@ namespace Database.Data
             return artists;
         }
 
-        public async Task<IReadOnlyList<Artist>> GetAllArtistsNotConnectedByPersonId(int id)
-        {
-            var notConnectedArtists = await _context.Artists
-                .AsNoTracking()
-                .Where(a => !_context.UserArtists
-                .Any(u => u.UserId == id && u.ArtistId == a.Id))
-                .ToListAsync();
-
-            return notConnectedArtists;
-        }
-
-
-        public async Task<IReadOnlyList<Genre>> GetAllGenresByPersonId(int id)
-        {
-            var personGenres = await _context.UserGenres
-                .AsNoTracking()
-                .Where(u => u.UserId == id)
-                .Select(u => u.Genre)
-                .ToListAsync();
-
-            return personGenres;
-        }
-
-
-        public async Task<IReadOnlyList<Song>> GetAllSongsByPersonId(int id)
+        //Gets all users favorite songs
+        public async Task<IReadOnlyList<Song>> GetAllSongsByUserIdAsync(int id)
         {
             var songs = await _context.UserSongs
                 .AsNoTracking()
@@ -98,18 +86,55 @@ namespace Database.Data
             return songs;
         }
 
-
-        public async Task<IReadOnlyList<User>> GetAllUsers()
+        //Gets all users favorite genres
+        public async Task<IReadOnlyList<Genre>> GetAllGenresByUserIdAsync(int id)
         {
-            var persons = await _context.Users
+            var personGenres = await _context.UserGenres
                 .AsNoTracking()
+                .Where(u => u.UserId == id)
+                .Select(u => u.Genre)
                 .ToListAsync();
 
-            return persons;
+            return personGenres;
         }
 
+        //Gets all artists not favorited by user (yet)
+        public async Task<IReadOnlyList<Artist>> GetAllArtistsNotConnectedByUserIdAsync(int id)
+        {
+            var notConnectedArtists = await _context.Artists
+            .AsNoTracking()
+            .Where(a => !_context.UserArtists
+                        .Any(u => u.UserId == id && u.ArtistId == a.Id))
+        .ToListAsync();
 
-        //Add new connection in UserArtist table
+            return notConnectedArtists;
+        }
+
+        //Gets all songs not favorited by user (yet)
+        public async Task<IReadOnlyList<Song>> GetAllSongsNotConnectedByUserIdAsync(int id)
+        {
+            var notConnectedSongs = await _context.Songs
+            .AsNoTracking()
+            .Where(a => !_context.UserSongs
+                        .Any(u => u.UserId == id && u.SongId == a.Id))
+        .ToListAsync();
+
+            return notConnectedSongs;
+        }
+
+        //Gets all genres not favorited by user (yet)
+        public async Task<IReadOnlyList<Genre>> GetAllGenresNotConnectedByUserIdAsync(int id)
+        {
+            var notConnectedGenres = await _context.Genres
+            .AsNoTracking()
+            .Where(a => !_context.UserGenres
+                        .Any(u => u.UserId == id && u.GenreId == a.Id))
+        .ToListAsync();
+
+            return notConnectedGenres;
+        }
+
+        //Adds new connection between user and artist
         public async Task AddUserArtistAsync(UserArtist userArtist)
         {
             var user = await _context.Users.FindAsync(userArtist.UserId);
@@ -137,8 +162,35 @@ namespace Database.Data
             await _context.SaveChangesAsync();
         }
 
+        //Adds new connection between user and song
+        public async Task AddUserSongAsync(UserSong userSong)
+        {
+            var user = await _context.Users.FindAsync(userSong.UserId);
+            var song = await _context.Songs.FindAsync(userSong.SongId);
+            if (user == null || song == null)
+            {
+                return;
+            }
 
-        //Add new connection in UserGenre table
+            var existingConnection = await _context.UserSongs
+                .Where(u => u.UserId == userSong.UserId && u.SongId == userSong.SongId)
+                .FirstOrDefaultAsync();
+            if (existingConnection != null)
+            {
+                return;
+            }
+
+            var newUserSong = new UserSong
+            {
+                UserId = userSong.UserId,
+                SongId = userSong.SongId
+            };
+
+            _context.UserSongs.Add(newUserSong);
+            await _context.SaveChangesAsync();
+        }
+
+        //Adds new connection between user and genre
         public async Task<UserGenre> AddUserGenreAsync(UserGenre userGenre)
         {
             var user = await _context.Users.FindAsync(userGenre.UserId);
@@ -167,34 +219,18 @@ namespace Database.Data
 
             return newUserGenre;
         }
+        
 
 
-        //Add new connection in UserSong table
-        public async Task AddUserSongAsync(UserSong userSong)
+        public async Task<Artist> AddArtistbyNameAsync(string artistname)
         {
-            var user = await _context.Users.FindAsync(userSong.UserId);
-            var song = await _context.Songs.FindAsync(userSong.SongId);
-            if (user == null || song == null)
-            {
-                return;
-            }
-
-            var existingConnection = await _context.UserSongs
-                .Where(u => u.UserId == userSong.UserId && u.SongId == userSong.SongId)
-                .FirstOrDefaultAsync();
-            if (existingConnection != null)
-            {
-                return;
-            }
-
-            var newUserSong = new UserSong
-            {
-                UserId = userSong.UserId,
-                SongId = userSong.SongId
-            };
-
-            _context.UserSongs.Add(newUserSong);
+            
+            Artist newArtist = new Artist { Name = artistname };
+            
+            _context.Artists.Add(newArtist);
             await _context.SaveChangesAsync();
+            return newArtist;
+             
         }
 
         public async Task SaveChanges()
