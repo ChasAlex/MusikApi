@@ -1,4 +1,4 @@
-﻿using Database.Data.Interfaces;
+using Database.Data.Interfaces;
 using Database.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -218,6 +218,19 @@ namespace Database.Data
             await _context.SaveChangesAsync();
 
             return newUserGenre;
+        }
+        
+
+
+        public async Task<Artist> AddArtistbyNameAsync(string artistname)
+        {
+            
+            Artist newArtist = new Artist { Name = artistname };
+            
+            _context.Artists.Add(newArtist);
+            await _context.SaveChangesAsync();
+            return newArtist;
+             
         }
 
         public async Task SaveChanges()

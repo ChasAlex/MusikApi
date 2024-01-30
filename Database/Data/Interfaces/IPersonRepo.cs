@@ -14,6 +14,7 @@ namespace Database.Data.Interfaces
         Task<IReadOnlyList<Artist>> GetAllArtistsNotConnectedByUserIdAsync(int id);
         Task<IReadOnlyList<Song>> GetAllSongsNotConnectedByUserIdAsync(int id);
         Task AddUserArtistAsync(UserArtist userArtist);
+        Task<Artist> AddArtistbyNameAsync(string artistname);
 
         // I needed to change for the test to workIs tested and should not break anything. 
         //Task AddUserGenreAsync(UserGenre userGenre);

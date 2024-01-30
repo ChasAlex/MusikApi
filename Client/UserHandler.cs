@@ -280,9 +280,13 @@ namespace Client
             {
                 Console.Write("Search for an Artist: ");
                 string artist = Console.ReadLine();
-                string apiUrl = $"http://localhost:5158/artistinfo/{artist}";
 
-                HttpResponseMessage response = await _client.GetAsync(apiUrl);
+                string apiUrlinfo = $"http://localhost:5158/artistinfo/{artist}";
+                string apiAddUrl = "http://localhost:5158/addartist";
+                string UserToArtistUrl = "";
+                
+                HttpResponseMessage response = await _client.GetAsync(apiUrlinfo);
+
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -291,6 +295,22 @@ namespace Client
                     Console.WriteLine($"Playcount: {info.Playcount}");
                     Console.WriteLine($"Bio: {info.Summary}");
                     Console.ReadLine();
+
+                    List<string> responds_options = new List<string>() { "Yes", "No" };
+                    Menu menu = new Menu();
+                    int answer = menu.ShowMenu(responds_options, "Would you like to save this Artist?");
+                    if (answer == 0)
+                    {
+
+                        HttpResponseMessage response1 = await _client.PostAsJsonAsync(apiAddUrl, new
+                        {
+                            Name = info.Name,
+                            Id = _user.Id
+                        });
+                    }
+                    
+                    Console.ReadLine(); 
+
 
                 }
                 else
