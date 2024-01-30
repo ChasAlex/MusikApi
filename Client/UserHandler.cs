@@ -7,13 +7,13 @@ namespace Client
 
     interface IUserHandler
     {
-        public void ArtistById(User loggedInUser) { }
-        public void GenresByid(User loggedInUser) { }
-        public void SongByid(User loggedInUser) { }
-        public void ConnectUserToArtist(User loggedInUser) { }
-        public void ConnectUsertoGenre(int id, string genre) { }
-        public void ConnectUsertoSong(int id, string song) { }
-        public void GetinfoFromAritst(string aritst) { } 
+        public void ArtistByIdAsync(User loggedInUser) { }
+        public void SongByidAsync(User loggedInUser) { }
+        public void GenresByidAsync(User loggedInUser) { }
+        public void ConnectUserToArtistAsync(User loggedInUser) { }
+        public void ConnectUsertoSongAsync(User loggedInUser) { }
+        public void ConnectUsertoGenreAsync(User loggedInUser) { }
+        public void GetinfoFromAritst(string aritst) { }
     }
 
     public class UserHandler
@@ -27,30 +27,8 @@ namespace Client
             _user = user;
         }
 
-        public async Task GenresById()
-        {
-            int userId = _user.Id;
-            string genreUserIdApiURL = $"http://localhost:5158/api/genres/{userId}";
-            HttpResponseMessage response = await _client.GetAsync(genreUserIdApiURL);
-            if (response.IsSuccessStatusCode)
-            {
-                string jsonResponse = await response.Content.ReadAsStringAsync();
-                List<Genre> favouriteGenres = JsonSerializer.Deserialize<List<Genre>>(jsonResponse);
-                Console.WriteLine("Favourite Genres\n");
-                foreach (var genre in favouriteGenres)
-                {
-                    await Console.Out.WriteLineAsync($"{genre.Title}");
-                }
-            }
-            else
-            {
-                await Console.Out.WriteLineAsync("No favorite genres registered.");
-            }
-            Console.Write("Press Enter to return to menu");
-            Console.ReadKey();
-        }
-
-        public async Task ArtistById()
+        //Gets users favorite artists, and retrieves more info about chosen artist
+        public async Task ArtistByIdAsync()
         {
             int userId = _user.Id;
             string artistUserIdApiURL = $"http://localhost:5158/api/artists/{userId}";
@@ -65,18 +43,18 @@ namespace Client
                 string chosenArtist = artistNames[IndexChosenArtist];
                 Artist chosenArtistInfo = favouriteArtists.FirstOrDefault(artist => artist.Name == chosenArtist);
                 Console.WriteLine("Favorite artist details\n");
-                await Console.Out.WriteLineAsync($"Name: {chosenArtistInfo.Name}\nDescription: {chosenArtistInfo.Description}\nCountry: {chosenArtistInfo.Country}\n");
+                await Console.Out.WriteLineAsync($"Name: {chosenArtistInfo.Name}\nDescription: {chosenArtistInfo.Description}\nCountry: {chosenArtistInfo.Country}");
             }
             else
             {
                 await Console.Out.WriteLineAsync("No favorite artists registered.");
             }
-            Console.Write("Press Enter to return to menu");
+            Console.Write("\nPress Enter to return to menu");
             Console.ReadKey();
         }
 
-
-        public async Task SongById()
+        //Gets users favorite songs
+        public async Task SongByIdAsync()
         {
             int userId = _user.Id;
             string songUserIdApiURL = $"http://localhost:5158/api/songs/{userId}";
@@ -96,43 +74,36 @@ namespace Client
             {
                 await Console.Out.WriteLineAsync("No favorite songs registered.");
             }
-            Console.Write("Press Enter to return to menu");
+            Console.Write("\nPress Enter to return to menu");
             Console.ReadKey();
         }
 
-        public async Task ConnectUserToArtist()
+        //Gets users favorite genres
+        public async Task GenresByIdAsync()
         {
-            int chosenArtistId = await GetArtistsNotConnectedToUser();
-
-            string userartistApiURL = "http://localhost:5158/userartist";
-
-            var userArtist = new
-            {
-                UserId = _user.Id,
-                ArtistId = chosenArtistId
-            };
-
-            HttpResponseMessage response = await _client.PostAsJsonAsync(userartistApiURL, userArtist);
+            int userId = _user.Id;
+            string genreUserIdApiURL = $"http://localhost:5158/api/genres/{userId}";
+            HttpResponseMessage response = await _client.GetAsync(genreUserIdApiURL);
             if (response.IsSuccessStatusCode)
             {
-                if (chosenArtistId != 0) 
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                List<Genre> favouriteGenres = JsonSerializer.Deserialize<List<Genre>>(jsonResponse);
+                Console.WriteLine("Favourite Genres\n");
+                foreach (var genre in favouriteGenres)
                 {
-                    await Console.Out.WriteLineAsync("Success!");
-                }
-                else
-                {
-                    await Console.Out.WriteLineAsync("No artists found.");
+                    await Console.Out.WriteLineAsync($"{genre.Title}");
                 }
             }
             else
             {
-                await Console.Out.WriteLineAsync($"Failed response code: {response.StatusCode} {response.ReasonPhrase}");
+                await Console.Out.WriteLineAsync("No favorite genres registered.");
             }
-            Console.Write("Press Enter to return to menu");
+            Console.Write("\nPress Enter to return to menu");
             Console.ReadKey();
         }
 
-        public async Task<int> GetArtistsNotConnectedToUser()
+        //Gets all artists not (yet) connected as favorite by user
+        public async Task<int> GetArtistsNotConnectedToUserAsync()
         {
             int userId = _user.Id;
             string artistNotConUserIdApiURL = $"http://localhost:5158/api/artists/notconnected/{userId}";
@@ -154,20 +125,168 @@ namespace Client
                 return 0;
             }
         }
-    
 
+        //Gets all songs not (yet) connected as favorite by user
+        public async Task<int> GetSongsNotConnectedToUserAsync()
+        {
+            int userId = _user.Id;
+            string songsNotConUserIdApiURL = $"http://localhost:5158/api/songs/notconnected/{userId}";
+            HttpResponseMessage response = await _client.GetAsync(songsNotConUserIdApiURL);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                List<Song> AllNonConnectedSongs = JsonSerializer.Deserialize<List<Song>>(jsonResponse);
+                List<string> songNames = AllNonConnectedSongs.Select(song => song.Name).ToList();
+                Menu menu = new Menu();
+                int newFavSongChoice = menu.ShowMenu(songNames, "Songs you haven't listed as favourites yet:");
+                string newFavSongName = songNames[newFavSongChoice];
+                Song newFavSong = AllNonConnectedSongs.FirstOrDefault(song => song.Name == newFavSongName);
+                return newFavSong.Id;
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync("Something went wrong.");
+                return 0;
+            }
+        }
 
-public async Task GetInfoFromArist()
+        //Gets all genres not (yet) connected as favorite by user
+        public async Task<int> GetGenresNotConnectedToUserAsync()
+        {
+            int userId = _user.Id;
+            string genreNotConUserIdApiURL = $"http://localhost:5158/api/genres/notconnected/{userId}";
+            HttpResponseMessage response = await _client.GetAsync(genreNotConUserIdApiURL);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                List<Genre> AllNonConnectedGenres = JsonSerializer.Deserialize<List<Genre>>(jsonResponse);
+                List<string> genreTitles = AllNonConnectedGenres.Select(genre => genre.Title).ToList();
+                Menu menu = new Menu();
+                int newFavGenreChoice = menu.ShowMenu(genreTitles, "Genres you haven't listed as favourites yet:");
+                string newFavGenreTitle = genreTitles[newFavGenreChoice];
+                Genre newFavGenre = AllNonConnectedGenres.FirstOrDefault(genre => genre.Title == newFavGenreTitle);
+                return newFavGenre.Id;
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync("Something went wrong.");
+                return 0;
+            }
+        }
+
+        //Creates connection between user and artist
+        public async Task ConnectUserToArtistAsync()
+        {
+            int chosenArtistId = await GetArtistsNotConnectedToUserAsync();
+
+            string userartistApiURL = "http://localhost:5158/userartist";
+
+            var userArtist = new
+            {
+                UserId = _user.Id,
+                ArtistId = chosenArtistId
+            };
+
+            HttpResponseMessage response = await _client.PostAsJsonAsync(userartistApiURL, userArtist);
+            if (response.IsSuccessStatusCode)
+            {
+                if (chosenArtistId != 0)
+                {
+                    await Console.Out.WriteLineAsync("Success!");
+                }
+                else
+                {
+                    await Console.Out.WriteLineAsync("No artists found.");
+                }
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync($"Failed response code: {response.StatusCode} {response.ReasonPhrase}");
+            }
+            Console.Write("\nPress Enter to return to menu");
+            Console.ReadKey();
+        }
+
+        //Creates connection between user and song
+        public async Task ConnectUserToSongAsync()
+        {
+            int chosenSongId = await GetSongsNotConnectedToUserAsync();
+
+            string userSongApiURL = "http://localhost:5158/usersong";
+
+            var userSong = new
+            {
+                UserId = _user.Id,
+                SongId = chosenSongId
+            };
+
+            HttpResponseMessage response = await _client.PostAsJsonAsync(userSongApiURL, userSong);
+            if (response.IsSuccessStatusCode)
+            {
+                if (chosenSongId != 0)
+                {
+                    await Console.Out.WriteLineAsync("Success!");
+                }
+                else
+                {
+                    await Console.Out.WriteLineAsync("No songs found.");
+                }
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync($"Failed response code: {response.StatusCode} {response.ReasonPhrase}");
+            }
+            Console.Write("\nPress Enter to return to menu");
+            Console.ReadKey();
+        }
+
+        //Creates connection between user and genre
+        public async Task ConnectUserToGenreAsync()
+        {
+            int chosenGenreId = await GetGenresNotConnectedToUserAsync();
+
+            string userGenreApiURL = "http://localhost:5158/usergenre";
+
+            var userGenre = new
+            {
+                UserId = _user.Id,
+                GenreId = chosenGenreId
+            };
+
+            HttpResponseMessage response = await _client.PostAsJsonAsync(userGenreApiURL, userGenre);
+            if (response.IsSuccessStatusCode)
+            {
+                if (chosenGenreId != 0)
+                {
+                    await Console.Out.WriteLineAsync("Success!");
+                }
+                else
+                {
+                    await Console.Out.WriteLineAsync("No genres found.");
+                }
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync($"Failed response code: {response.StatusCode} {response.ReasonPhrase}");
+            }
+            Console.Write("\nPress Enter to return to menu");
+            Console.ReadKey();
+        }
+
+        //Gets info of chosen artist with external api
+        public async Task GetInfoFromArist()
         {
             try
             {
                 Console.Write("Search for an Artist: ");
                 string artist = Console.ReadLine();
+
                 string apiUrlinfo = $"http://localhost:5158/artistinfo/{artist}";
                 string apiAddUrl = "http://localhost:5158/addartist";
                 string UserToArtistUrl = "";
                 
                 HttpResponseMessage response = await _client.GetAsync(apiUrlinfo);
+
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -176,6 +295,7 @@ public async Task GetInfoFromArist()
                     Console.WriteLine($"Playcount: {info.Playcount}");
                     Console.WriteLine($"Bio: {info.Summary}");
                     Console.ReadLine();
+
                     List<string> responds_options = new List<string>() { "Yes", "No" };
                     Menu menu = new Menu();
                     int answer = menu.ShowMenu(responds_options, "Would you like to save this Artist?");
@@ -190,6 +310,7 @@ public async Task GetInfoFromArist()
                     }
                     
                     Console.ReadLine(); 
+
 
                 }
                 else
