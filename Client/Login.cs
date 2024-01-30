@@ -6,49 +6,51 @@ namespace Client
 {
     public class Login
     {
+
+        private const string _loginApiUrl = "http://localhost:5158/login";
+        private const string _signupApiUrl = "http://localhost:5158/signup";
+
+
         public async Task UserLoginAsync()
         {
             while (true)
             {
                 //Checks if user wants to login or signup
-                List<string> loginOptions = new List<string>
-                        {
-                            "Login",
-                            "Signup",
-                        };
-                Menu menu = new Menu();
-                int indexLoginOption = menu.ShowMenu(loginOptions, "Welcome");
+                var loginOptions = new List<string> { "Login", "Signup", };
+
+
+                int indexLoginOption = Menu.ShowMenu(loginOptions, "Welcome");
                 if (indexLoginOption == 0) //menu choice: login
                 {
                     Console.WriteLine("Enter username: ");
-                    string usernameInput = Console.ReadLine().ToLower();
+                    string userNameInput = Console.ReadLine().ToLower();
+
                     Console.WriteLine("Enter password: ");
                     string passwordInput = PasswordManager.HideAndReadPassword();
 
-                    string loginApiUrl = "http://localhost:5158/login";
 
                     var credentials = new
                     {
-                        Username = usernameInput,
+                        Username = userNameInput,
                         Password = passwordInput
                     };
 
                     Console.Clear();
-                    using (HttpClient client = new HttpClient())
-                    {
-                        HttpResponseMessage response = await client.PostAsJsonAsync(loginApiUrl, credentials);
-                        if (response.IsSuccessStatusCode)
-                        {
-                            var loggedInUser = await response.Content.ReadFromJsonAsync<User>(); //gets and stores info about who is logged in
+                    using HttpClient client = new HttpClient();
 
-                            if (loggedInUser != null)
-                            {
-                                await MainMenuAsync(loggedInUser); //starts main menu for logged in user
-                            }
-                            else
-                            {
-                                Console.WriteLine("Failed to login");
-                            }
+                    HttpResponseMessage response = await client.PostAsJsonAsync(_loginApiUrl, credentials);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var loggedInUser = await response.Content.ReadFromJsonAsync<User>(); //gets and stores info about who is logged in
+
+                        if (loggedInUser != null)
+                        {
+                            await MainMenuAsync(loggedInUser); //starts main menu for logged in user
+                        }
+                        else
+                        {
+                            Console.WriteLine("Failed to login");
                         }
                     }
                 }
@@ -60,6 +62,7 @@ namespace Client
                 {
                     Console.WriteLine("Something went wrong :(");
                 }
+
                 Console.Write("Press Enter to return to menu");
                 Console.ReadKey();
             }
@@ -69,25 +72,27 @@ namespace Client
         public async Task SignupAsync()
         {
             Console.WriteLine("Enter fullname: ");
-            string fullnameInput = Console.ReadLine();
+            string fullNameInput = Console.ReadLine();
+
             Console.WriteLine("Enter username: ");
-            string usernameInput = Console.ReadLine().ToLower();
+            string userNameInput = Console.ReadLine().ToLower();
+
             Console.WriteLine("Enter password: ");
             string passwordInput = Console.ReadLine();
 
-            string signupApiUrl = "http://localhost:5158/signup";
-
             var signupInfo = new
             {
-                fullname = fullnameInput,
-                Username = usernameInput,
+                fullname = fullNameInput,
+                Username = userNameInput,
                 Password = passwordInput
             };
 
             Console.Clear();
-            using (HttpClient client = new HttpClient())
+
+            using (var client = new HttpClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync(signupApiUrl, signupInfo);
+                HttpResponseMessage response = await client.PostAsJsonAsync(_signupApiUrl, signupInfo);
+
                 if (response.IsSuccessStatusCode)
                 {
                     await Console.Out.WriteLineAsync("Hurray! You've been registered!");
@@ -101,6 +106,7 @@ namespace Client
                     await Console.Out.WriteLineAsync("Something went wrong :(");
                 }
             }
+
             Console.Write("Press Enter to return to menu");
             Console.ReadKey();
         }
@@ -122,9 +128,10 @@ namespace Client
                         };
             while (loggedInUser != null)
             {
-                Menu loginMenu = new Menu();
-                int choice = loginMenu.ShowMenu(mainMenuOptions);
+
+                int choice = Menu.ShowMenu(mainMenuOptions);
                 bool loggedIn = await MainMenuOptionsAsync(choice, loggedInUser);
+
                 if (!loggedIn)
                 {
                     Console.WriteLine("Logging out...");
@@ -137,6 +144,7 @@ namespace Client
         public async Task<bool> MainMenuOptionsAsync(int optionIndex, User loggedInUser)
         {
             UserHandler userHandler = new UserHandler(loggedInUser);
+
             switch (optionIndex)
             {
                 case 0:
@@ -163,6 +171,7 @@ namespace Client
                 case 7:
                     return false; //returns false for loggedIn, which makes main menu delete info about logged in user, which stops main menu-loop
             }
+
             return true;
         }
     }

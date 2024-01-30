@@ -1,9 +1,9 @@
 ﻿
 namespace Client
 {
-    public class Menu
+    public static class Menu
     {
-        public int ShowMenu(List<string> menuOptions, string title = "Menu")
+        public static int ShowMenu(List<string> menuOptions, string title = "Menu")
         {
             int selectedIndex = 0;
             int maxAlternativesPerSide = 10;

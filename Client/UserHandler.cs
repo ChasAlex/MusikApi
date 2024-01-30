@@ -26,9 +26,10 @@ namespace Client
                 string jsonResponse = await response.Content.ReadAsStringAsync();
                 List<Artist> favouriteArtists = JsonSerializer.Deserialize<List<Artist>>(jsonResponse);
                 List<string> artistNames = favouriteArtists.Select(artist => artist.Name).ToList();
-                Menu menu = new Menu();
-                int IndexChosenArtist = menu.ShowMenu(artistNames, "Favorited artists");
+
+                int IndexChosenArtist = Menu.ShowMenu(artistNames, "Favorited artists");
                 string chosenArtist = artistNames[IndexChosenArtist];
+
                 Artist chosenArtistInfo = favouriteArtists.FirstOrDefault(artist => artist.Name == chosenArtist);
                 Console.WriteLine("Favorite artist details\n");
                 await Console.Out.WriteLineAsync($"Name: {chosenArtistInfo.Name}\nDescription: {chosenArtistInfo.Description}\nCountry: {chosenArtistInfo.Country}");
@@ -101,8 +102,8 @@ namespace Client
                 string jsonResponse = await response.Content.ReadAsStringAsync();
                 List<Artist> AllNonConnectedArtists = JsonSerializer.Deserialize<List<Artist>>(jsonResponse);
                 List<string> artistNames = AllNonConnectedArtists.Select(artist => artist.Name).ToList();
-                Menu menu = new Menu();
-                int newFavArtistChoice = menu.ShowMenu(artistNames, "Artists you haven't listed as favourites yet:");
+
+                int newFavArtistChoice = Menu.ShowMenu(artistNames, "Artists you haven't listed as favourites yet:");
                 string newFavArtistName = artistNames[newFavArtistChoice];
                 Artist newFavArtist = AllNonConnectedArtists.FirstOrDefault(artist => artist.Name == newFavArtistName);
                 return newFavArtist.Id;
@@ -125,8 +126,8 @@ namespace Client
                 string jsonResponse = await response.Content.ReadAsStringAsync();
                 List<Song> AllNonConnectedSongs = JsonSerializer.Deserialize<List<Song>>(jsonResponse);
                 List<string> songNames = AllNonConnectedSongs.Select(song => song.Name).ToList();
-                Menu menu = new Menu();
-                int newFavSongChoice = menu.ShowMenu(songNames, "Songs you haven't listed as favourites yet:");
+
+                int newFavSongChoice = Menu.ShowMenu(songNames, "Songs you haven't listed as favourites yet:");
                 string newFavSongName = songNames[newFavSongChoice];
                 Song newFavSong = AllNonConnectedSongs.FirstOrDefault(song => song.Name == newFavSongName);
                 return newFavSong.Id;
@@ -149,8 +150,8 @@ namespace Client
                 string jsonResponse = await response.Content.ReadAsStringAsync();
                 List<Genre> AllNonConnectedGenres = JsonSerializer.Deserialize<List<Genre>>(jsonResponse);
                 List<string> genreTitles = AllNonConnectedGenres.Select(genre => genre.Title).ToList();
-                Menu menu = new Menu();
-                int newFavGenreChoice = menu.ShowMenu(genreTitles, "Genres you haven't listed as favourites yet:");
+
+                int newFavGenreChoice = Menu.ShowMenu(genreTitles, "Genres you haven't listed as favourites yet:");
                 string newFavGenreTitle = genreTitles[newFavGenreChoice];
                 Genre newFavGenre = AllNonConnectedGenres.FirstOrDefault(genre => genre.Title == newFavGenreTitle);
                 return newFavGenre.Id;
@@ -271,7 +272,7 @@ namespace Client
                 string apiUrlinfo = $"http://localhost:5158/artistinfo/{artist}";
                 string apiAddUrl = "http://localhost:5158/addartist";
                 string UserToArtistUrl = "";
-                
+
                 HttpResponseMessage response = await _client.GetAsync(apiUrlinfo);
 
                 if (response.IsSuccessStatusCode)
@@ -283,8 +284,8 @@ namespace Client
                     Console.ReadLine();
 
                     List<string> responds_options = new List<string>() { "Yes", "No" };
-                    Menu menu = new Menu();
-                    int answer = menu.ShowMenu(responds_options, "Would you like to save this Artist?");
+
+                    int answer = Menu.ShowMenu(responds_options, "Would you like to save this Artist?");
                     if (answer == 0)
                     {
 
@@ -294,8 +295,8 @@ namespace Client
                             Id = _user.Id
                         });
                     }
-                    
-                    Console.ReadLine(); 
+
+                    Console.ReadLine();
 
 
 
