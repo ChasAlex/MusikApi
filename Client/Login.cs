@@ -124,6 +124,8 @@ namespace Client
                             "Add a new favorite song",
                             "Add a new favorite genre",
                             "Search for an Artist",
+                            "Search for an Genre",
+                            "Search toptracks for an Artist",
                             "Log out"
                         };
             while (loggedInUser != null)
@@ -166,9 +168,15 @@ namespace Client
                     await userHandler.ConnectUserToGenreAsync();
                     break;
                 case 6:
-                    await userHandler.GetInfoFromArist();
+                    await userHandler.GetInfoFromAristAsync();
                     break;
                 case 7:
+                    await userHandler.GetTopSongsGenreAsync();
+                    break;
+                case 8:
+                    await userHandler.GetTopSongsArtistAsync();
+                    break;
+                case 9:
                     return false; //returns false for loggedIn, which makes main menu delete info about logged in user, which stops main menu-loop
             }
 

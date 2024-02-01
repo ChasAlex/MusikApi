@@ -263,7 +263,7 @@ namespace Client
         }
 
         //Gets info of chosen artist with external api
-        public async Task GetInfoFromArist()
+        public async Task GetInfoFromAristAsync()
         {
             try
             {
@@ -294,6 +294,85 @@ namespace Client
                             Name = info.Name,
                             Id = _user.Id
                         });
+                    }
+
+                    Console.ReadLine();
+
+
+
+                }
+                else
+                {
+                    Console.WriteLine("Error: " + response.StatusCode);
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+
+                Console.WriteLine($"Exception: {ex.Message}");
+            }
+        }
+
+
+        public async Task GetTopSongsGenreAsync()
+        {
+            try
+            {
+                Console.Write("Search for an Genre: ");
+                string genre = Console.ReadLine();
+                string apiUrlinfo = $"http://localhost:5158/genre/{genre}";
+                
+
+                HttpResponseMessage response = await _client.GetAsync(apiUrlinfo);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var info = JsonSerializer.Deserialize<GetTopTracksByGenreViewmodel[]>(await response.Content.ReadAsStringAsync());
+
+                    Console.WriteLine();
+                    for(int i = 0; i < 10; i++)
+                    {
+                        Console.WriteLine($"{info[i].Name}");
+                    }
+
+                    Console.ReadLine();
+
+
+
+                }
+                else
+                {
+                    Console.WriteLine("Error: " + response.StatusCode);
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+
+                Console.WriteLine($"Exception: {ex.Message}");
+            }
+        }
+
+
+        public async Task GetTopSongsArtistAsync()
+        {
+            try
+            {
+                Console.Write("Search for an Artist: ");
+                string artist = Console.ReadLine();
+                string apiUrlinfo = $"http://localhost:5158/artist/{artist}";
+
+
+                HttpResponseMessage response = await _client.GetAsync(apiUrlinfo);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var info = JsonSerializer.Deserialize<GetTopTrackByArtistViewmodel[]>(await response.Content.ReadAsStringAsync());
+
+                    Console.WriteLine();
+                    for (int i = 0; i < 10; i++)
+                    {
+                        Console.WriteLine($"Song: {info[i].Name}");
+                        Console.WriteLine($"Plays: {info[i].Playcount}");
                     }
 
                     Console.ReadLine();
