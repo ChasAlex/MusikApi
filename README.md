@@ -343,7 +343,7 @@ HTTP response: 404 Not Found
 ```
 
 ### Using the Client program
-Info about the client program...
+The client comes with an interactive menu for the user to both interact with the internal api:s aswell as the external.
 
 ## Contributors
 Students:
